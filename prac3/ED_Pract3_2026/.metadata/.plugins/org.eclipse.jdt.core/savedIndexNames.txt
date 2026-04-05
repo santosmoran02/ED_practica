@@ -1,6 +1,0 @@
-INDEX VERSION 1.134+C:\Users\santo\OneDrive\Escritorio\ED_practicas\prac3\ED_Pract3_2026\.metadata\.plugins\org.eclipse.jdt.core
-2093748550.index
-4264348182.index
-2630771520.index
-1865797976.index
-151625376.index
