@@ -1,0 +1,574 @@
+package ule.ed.list;
+
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
+public class LinkedEDList<T> implements EDList<T> {
+
+	// referencia al primer de la lista
+	private Node<T> front;
+
+	public LinkedEDList() {
+		front = null;
+	}
+
+	private class Node<T> {
+
+		Node(T element) {
+			this.elem = element;
+			this.next = null;
+		}
+
+		T elem;
+
+		Node<T> next;
+	}
+	///////
+	///// ITERADOR normal //////////
+
+	@SuppressWarnings("hiding")
+	private class LinkedListIterator<T> implements Iterator<T> {
+		Node<T> node;
+
+		public LinkedListIterator(Node<T> aux) {
+			node = aux;
+		}
+
+		@Override
+		public boolean hasNext() {
+			return node!= null;
+		}
+
+		@Override
+		public T next() throws NoSuchElementException {
+			if (node == null) {
+				throw new NoSuchElementException("El nodo está apuntando a null\n");
+			}
+			T aux = node.elem;
+			node = node.next;
+			return aux;
+		}
+	}
+
+	public class LinkedListOddIterator<T> implements Iterator<T> {
+		Node<T> node;
+
+		public LinkedListOddIterator(Node<T> aux) {
+			node = aux;
+		}
+
+		@Override
+		public boolean hasNext() {
+			return node != null;
+		}
+
+		@Override
+		public T next() throws NoSuchElementException{
+			if (node == null) {
+				throw new NoSuchElementException("Como node es null, no se puede acceder al siguiente\n");
+			}
+			
+			
+			T aux = node.elem;
+			if (node.next != null) {
+				node = node.next.next;
+			} else {
+				node = null;
+			}
+			
+			return aux;
+		}
+	}
+
+	public class LinkedListEvenIterator<T> implements Iterator<T> {
+
+		Node<T> node;
+
+		public LinkedListEvenIterator(Node<T> aux) {
+			if (aux == null) {
+				node = null;
+			} else {
+				node = aux.next;
+			}
+			
+		}
+
+		@Override
+		public boolean hasNext() {
+			return node != null;
+		}
+
+		@Override
+		public T next() throws NoSuchElementException{
+			if (node == null) {
+				throw new NoSuchElementException("Node no puede ser null\n");
+			}
+			T aux = node.elem;
+			if (node.next != null) {
+				node = node.next.next;
+			} else {
+				node = null;
+			}
+			return aux;
+		}
+	}
+	
+	public class LinkedListProgressIterator<T> implements Iterator<T> {
+		Node<T> node;
+		int posicion_actual;
+		int veces_repetidas;
+		
+		public LinkedListProgressIterator(Node<T> aux) {
+			node = aux;
+			posicion_actual = 1;
+			veces_repetidas = 0;
+		}
+		
+		@Override
+		public boolean hasNext() {
+			return node != null;
+		}
+		
+		@Override
+		public T next() throws NoSuchElementException{
+			if (node == null) {
+				throw new NoSuchElementException("El node no puede ser null\n");
+			}
+		    T aux = node.elem;
+		    veces_repetidas++;
+		    if (veces_repetidas == posicion_actual) {
+		        node = node.next;
+		        posicion_actual++;
+		        veces_repetidas = 0;
+		    }
+		    return aux;
+		}
+	}
+
+	//AÑADIR RESTO DE CLASES DE ITERADORES
+	
+	///////
+	@Override
+	public int size() {
+		int contador = 0;
+		Node <T> aux;
+		aux = front;
+		while (aux != null) {
+			aux = aux.next;
+			contador++;
+		}
+		return contador;
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return front == null;
+	}
+
+	@Override
+	public void clear() {
+	 front = null;	
+	}
+
+	@Override
+	public void addFirst(T elem) throws NullPointerException{
+		if (elem == null) {
+			throw new NullPointerException("El elemento recibido es un null\n");
+		}
+		Node <T> nodo = new Node(elem);
+		nodo.next = front;
+		front = nodo;
+	}
+
+	@Override
+	public void addLast(T elem) throws NullPointerException{
+		if (elem == null) {
+			throw new NullPointerException("El elemento recibido es un null\n");
+		}
+		
+		Node <T> nodo = new Node(elem);
+		Node <T> aux = front;
+		
+		if (front == null) {
+			front = nodo;
+			return;
+		}
+		
+		while(aux.next != null) {
+			aux = aux.next;
+		}
+		aux.next = nodo;
+		
+	}
+
+	@Override
+	public void addPenul(T elem) {
+		if (elem == null) {
+			throw new NullPointerException("El elemento recibido es un null\n");
+		}
+		
+		Node <T> nodo = new Node(elem);
+		Node <T> aux = front;
+		
+		if (front == null) {
+			front = nodo;
+			return;
+		}
+		if (front.next == null) {
+			nodo.next = front;
+			front = nodo;
+			return;
+		}
+		
+		while(aux.next.next != null) {
+			aux = aux.next;
+		}
+		nodo.next = aux.next;
+		aux.next = nodo;
+	}
+
+	@Override
+	public void addPos(T elem, int position) {
+		if (elem == null) {
+			throw new NullPointerException("Elemento inválido porque es null\n");
+		}
+		
+		if (position <= 0) {
+			throw new IllegalArgumentException("Error, la posición debe ser mayor que 0\n");
+		}
+		
+		if (position == 1) {
+			addFirst(elem);
+			return;
+		}
+		
+		if (position > size()) {
+			addLast(elem);
+			return;
+		}
+		
+		int contador= 1;
+		Node <T> nodo = new Node(elem);
+		
+		
+		Node <T> aux = front;
+		
+		while(contador < position - 1) {
+			aux = aux.next;
+			contador++;
+		}
+		
+		nodo.next = aux.next;
+		aux.next = nodo;
+	}
+
+	@Override
+	public T removeFirst() throws EmptyCollectionException {
+		if (front == null) {
+			throw new EmptyCollectionException("La lista está vacía\n");
+		}
+		
+		T primero;
+
+		primero = front.elem;
+		front = front.next;
+	
+		return primero;
+	}
+
+	@Override
+	public T removeLast() throws EmptyCollectionException {
+		if (front == null) {
+			throw new EmptyCollectionException("Error, la lista está vacía\n");
+		}
+		T ultimo;
+		Node <T> aux = front;
+		if (front.next == null) {
+			ultimo = front.elem;
+			front = null;
+			return ultimo;
+		} 
+		
+		while(aux.next.next != null) {
+			aux = aux.next;
+		}
+		ultimo = aux.next.elem;
+		aux.next = null;
+		
+		return ultimo;
+	}
+
+	@Override
+	public T removePenul() throws EmptyCollectionException {
+		if (front == null) {
+			throw new EmptyCollectionException("Error, no hay elementos en la lista\n");
+		}
+		
+		if (front.next == null) {
+			throw new NoSuchElementException("Error, solo hay un elemento en la lista\n");
+		}
+		Node <T> aux = front;
+		T penultimo;
+		
+		if (front.next.next == null) {
+			penultimo = front.elem;
+			front = front.next;
+			return penultimo;
+		}
+		
+		while (aux.next.next.next != null) {
+			aux = aux.next;
+		}
+		penultimo = aux.next.elem;
+		aux.next = aux.next.next;
+		
+		return penultimo;
+	}
+
+	@Override
+	public T removeElem(T elem) throws EmptyCollectionException {
+		if (elem == null) {
+			throw new NullPointerException("Error, el elemento no puede ser nulo\n");
+		}
+		if (front == null) {
+			throw new EmptyCollectionException("Error, la lista está vacía\n");
+		}
+		
+		Node <T> previo = null, actual = front;
+		
+		while (actual != null && !actual.elem.equals(elem)) {
+			previo = actual;
+			actual = actual.next;
+		}
+		
+		if (actual == null) {
+			throw new NoSuchElementException("Error, el elemento no está en la lista\n");
+		}
+		
+		T elemento;
+		
+		if (previo == null) {
+			elemento = actual.elem;
+			front = front.next;
+		} else {
+			elemento = previo.next.elem;
+			previo.next = previo.next.next;
+		}
+		
+		return elemento;
+		
+	
+	}
+
+	@Override
+	public T getElemPos(int position) {
+		if (position < 1 || position > size()) {
+			throw new IllegalArgumentException("Error, la posición no está en el rango pemitido\n");
+		}
+		
+		T elemento;
+		int contador = 1;
+		Node <T> nodo = front;
+		while (contador < position) {
+			nodo = nodo.next;
+			contador++;
+		}
+		
+		elemento = nodo.elem;
+		return elemento;
+	}
+
+	@Override
+	public int getPosLast(T elem) {
+		if (elem == null) {
+			throw new NullPointerException("Error, el elemento es un null\n");
+		}
+		
+		int contador = 1;
+		int posicion = -1;
+		Node <T> aux;
+		aux = front;
+		while (aux != null) {
+			if (aux.elem.equals(elem)) {
+				posicion = contador;
+			}
+			aux = aux.next;
+			contador++;
+		}
+		
+		if (posicion == -1) {
+			throw new NoSuchElementException("Ese elemento no aparece en la lista\n");
+		}
+		
+		return posicion;
+	}
+
+	
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		
+		Node <T> aux = front;
+		
+		sb.append("(");
+		
+		while (aux != null) {
+			sb.append(aux.elem + " ");
+			aux = aux.next;
+		}
+		sb.append(")");
+		return sb.toString();
+	}
+
+	@Override
+	public Iterator<T> iterator() {
+		return new LinkedListIterator(this.front);
+	}
+
+	@Override
+	public Iterator<T> evenPositionsIterator() {
+		return new LinkedListEvenIterator(this.front);
+	}
+
+	@Override
+	public Iterator<T> oddPositionsIterator() {
+		return new LinkedListOddIterator(this.front);
+	}
+
+	
+	@Override
+	public int removeLastElem(T elem) throws EmptyCollectionException {
+		if (elem == null) {
+			throw new NullPointerException("Error, el elemento no puede ser nulo\n");
+		}
+		
+		if (front == null) {
+			throw new EmptyCollectionException("Error, la lista está vacía\n");
+		}
+		
+		Node <T> previo = null, previo_previo = null, aux = front;
+		int posicion = -1;
+		int contador = 1;
+		
+		while (aux != null) {
+			
+			if (aux.elem.equals(elem)) {
+				posicion = contador;
+				previo_previo = previo;
+			}
+			
+			contador++;
+			previo = aux;
+			aux = aux.next;
+		}
+		
+		if (posicion == -1) {
+			throw new NoSuchElementException("Error, el elemtento no está en la lista\n");
+		}
+		
+		if (previo_previo == null) {
+		    front = front.next;
+		} else {
+		    previo_previo.next = previo_previo.next.next;
+		}
+		return posicion;
+	}
+
+	
+	@Override
+	public T mostFrequent() throws EmptyCollectionException{
+		if (front == null) {
+			throw new EmptyCollectionException("Error, la lista está vacía\n");
+		}
+		
+		Node <T> aux = front;
+		T elemento = null;
+		
+		
+		int mejor = 0;
+		
+		while (aux != null) {
+			int contador = 0;
+			Node <T> aux2 = front;
+			while (aux2 != null) {
+				if (aux.elem.equals(aux2.elem)) {
+					contador++;
+					if (contador > mejor) {
+						mejor = contador;
+						elemento = aux.elem;
+					}
+				}
+				aux2 = aux2.next;
+			}
+			aux = aux.next;
+		}
+		return elemento;
+		
+	}
+
+	
+
+	@Override
+	public int intersec(EDList<T> other) {
+		if (other == null) {
+			throw new NullPointerException("Error, la lista recibida no puede ser null\n");
+		}
+		
+		Node <T> aux = front;
+		int contador= 0;
+		Node <T> previo = null;
+		
+		
+		while (aux != null) {
+			Iterator<T> it = other.iterator();
+			boolean encontrado = false;
+			while (it.hasNext()) {
+				
+				if (aux.elem.equals(it.next())) {
+					encontrado = true;
+					break;
+				}
+			}
+			if (!encontrado) {
+			    if (previo == null) {
+			        front = front.next;
+			    } else {
+			        previo.next = aux.next;
+			    }
+			    aux = aux.next;
+			    contador++;
+			} else {
+			    previo = aux;
+			    aux = aux.next;
+			}
+		}
+		return contador;
+	}
+
+	@Override
+	public EDList<T> split(int pos) {
+		if (pos < 1 || pos > size()) {
+			throw new IllegalArgumentException("El valor de la posición introducida no es válido\n");
+		}
+		
+		Node<T> aux = front;
+		int contador = 1;
+		
+		while (contador < pos) {
+			aux = aux.next;
+			contador++;
+		}
+		
+		Node <T> referencia = aux.next;
+		aux.next = null;
+		
+		LinkedEDList<T> nuevaLista = new LinkedEDList<>();
+		nuevaLista.front = referencia;
+		return nuevaLista;
+	}
+
+	@Override
+	public Iterator<T> progressIterator() {
+		return new LinkedListProgressIterator(this.front);
+	}
+
+}

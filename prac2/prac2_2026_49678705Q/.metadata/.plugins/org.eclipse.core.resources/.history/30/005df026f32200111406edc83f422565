@@ -1,0 +1,495 @@
+package ule.ed.list;
+
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
+
+public class ArrayEDList<T> implements EDList<T> {
+	//private final int DEFAULT_CAPACITY=100; 
+    private T[] data;
+	private int count;
+	
+	@SuppressWarnings("unchecked")
+	public ArrayEDList() {
+		count = 0;
+		data = (T[]) (new Object[5]);
+	}
+	
+	  @SuppressWarnings("unchecked")
+	  public ArrayEDList(int initialCapacity) {
+		count = 0;
+		data = (T[]) (new Object[initialCapacity]);
+	}
+	
+	@SuppressWarnings("hiding")
+private class ArrayListIterator<T> implements Iterator<T> {
+		
+		private int count;
+		private T[] data;
+		private int index;
+		
+		public ArrayListIterator(T[] data){
+			this.index = 0;
+			this.data = data;
+		}
+		
+		@Override
+		public boolean hasNext() {
+			return index < ArrayEDList.this.count;
+		}
+
+		@Override
+		public T next() { 
+			if (!hasNext()) {
+				throw new NoSuchElementException("Error, no hay siguiente\n");
+			}
+			T elem = data[index];
+			index++;
+			return elem;
+		}	
+	}
+	
+//////FIN ITERATOR
+/// AÑADIR TANTAS CLASES DE ITERADORES COMO MÉTODOS DE ITERADOR HAYA EN EL INTERFACE
+
+
+	@SuppressWarnings("hiding")
+	private class ArrayListOddIterator<T> implements Iterator<T> {
+		
+		private int count;
+		private T[] data;
+		private int index;
+		
+		public ArrayListOddIterator(T[] data){
+			this.index = 0;
+			this.data = data;
+		}
+		
+		@Override
+		public boolean hasNext() {
+			return index < ArrayEDList.this.count;
+		}
+
+		@Override
+		public T next() {
+			if (!hasNext()) {
+				throw new NoSuchElementException("Error, no hay siguiente\n");
+			}
+			T elem = data[index];
+			index = index + 2;
+			return elem;
+		}	
+	}
+	
+	@SuppressWarnings("hiding")
+	private class ArrayListEvenIterator<T> implements Iterator<T> {
+		
+		private int count;
+		private T[] data;
+		private int index;
+		
+		public ArrayListEvenIterator(T[] data){
+			this.index = 1;
+			this.data = data;
+		}
+		
+		@Override
+		public boolean hasNext() {
+			return index < ArrayEDList.this.count;
+		}
+
+		@Override
+		public T next() {
+			if (!hasNext()) {
+				throw new NoSuchElementException("Error, no hay siguiente\n");
+			}
+			T elem = data[index];
+			index = index + 2;
+			return elem;
+		}	
+	}
+	
+	@SuppressWarnings("hiding")
+	private class ArrayListProgressIterator<T> implements Iterator<T> {
+		
+		private int count;
+		private T[] data;
+		private int index;
+		private int repetido;
+		private int repetirse;
+		
+		public ArrayListProgressIterator(T[] data){
+			this.index = 0;
+			this.data = data;
+			this.repetirse = 1;
+			this.repetido = 0;
+		}
+		
+		@Override
+		public boolean hasNext() {
+			return index < ArrayEDList.this.count;
+		}
+
+		@Override
+		public T next() {
+			T elem = data[index];
+			repetido++;
+			if (repetido == repetirse) {
+			    index++;
+			    repetirse++;
+			    repetido = 0;
+			}
+			return elem;
+		}	
+	}
+	
+	
+	
+	
+
+	@Override
+	public int size() {
+		
+		return this.count;
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return count == 0;
+
+	}
+
+	@Override
+	public void clear() {
+		for (int i = 0; i < this.count; i++) {
+			data[i] = null;
+		}
+		count = 0;
+	}
+
+	@Override
+	public void addFirst(T elem) {
+		if (elem == null) {
+			throw new NullPointerException("El elemento recibido como parámetro es null\n");
+		}
+		
+		if (count >= this.data.length) {
+			expandCapacity();
+		}
+			
+		for (int i = this.count - 1; i >= 0; i--) {
+			data[i + 1] = data[i];
+		}
+		data[0] = elem;
+		count++;
+	}
+	
+	
+	public  void expandCapacity() {
+		T[] newData = (T[]) new Object[data.length * 2];
+		for (int i = 0; i < count; i++) {
+		    newData[i] = data[i];
+		}
+		data = newData;
+	}
+
+	@Override
+	public void addLast(T elem) {
+		if (elem == null) {
+			throw new NullPointerException("Error, el elemento no puede ser null\n");
+		}
+		
+		if (count >= data.length) {
+			expandCapacity();
+		}
+		
+		data[count] = elem;
+		count++;
+	}
+
+	@Override
+	public void addPenul(T elem) {
+		if (elem == null) {
+			throw new NullPointerException("Error, el elemento no puede ser null\n");
+		}
+		
+		if (count >= data.length) {
+			expandCapacity();
+		}
+		
+		if (count == 0) {
+			data[0] = elem;
+		} else {
+			data[count] = data[count - 1];
+			data[count - 1] = elem;
+		}
+		count++;
+	}
+
+	@Override
+	public void addPos(T elem, int position) {
+		if (elem == null) {
+			throw new NullPointerException("Error, el elemento introducido es null\n");
+		}
+		
+		if (position <= 0) {
+			throw new IllegalArgumentException("Error, la posición tiene que ser mayor que 0\n");
+		}
+		
+		if (count >= data.length) {
+			expandCapacity();
+		}
+		
+		if (position > count) {
+			data[count] = elem;
+		} else {
+			for (int i = count; i >= position; i--) {
+				data[i] = data[i - 1];
+			}
+			data[position - 1] = elem;
+		}
+		
+		count++;
+		
+		
+	}
+
+	@Override
+	public T removeFirst() throws EmptyCollectionException {
+		if (count == 0) {
+			throw new EmptyCollectionException("Error, no hay elementos en la lista\n");
+		}
+		T primero = data[0];
+		data[0] = null;
+		
+		for (int i = 0; i < count - 1; i++) {
+			data[i] = data[i + 1];
+		}
+		data[count - 1] = null;
+		count--;
+		return primero;
+	}
+
+	@Override
+	public T removeLast() throws EmptyCollectionException {
+		if (count == 0) {
+			throw new EmptyCollectionException("Error, la lista está vacía\n");
+		}
+		
+		T ultimo = data[count - 1];
+		data[count - 1] = null;
+		count--;
+		return ultimo;
+	}
+
+	@Override
+	public T removePenul() throws EmptyCollectionException {
+		if (count == 0) {
+			throw new EmptyCollectionException("Error, no hay elementos en la lista\n");
+		}
+		
+		if (count == 1) {
+			throw new NoSuchElementException("Error, solo hay un elemento en la lista\n");
+		}
+		T penultimo = data[count - 2];
+		data[count - 2] = data[count - 1];
+		data[count - 1] = null;
+		count--;
+		return penultimo;
+	}
+
+	@Override
+	public T removeElem(T elem) throws EmptyCollectionException {
+		if (elem == null) {
+			throw new NullPointerException("Error, el elemento no puede ser nulo\n");
+		}
+		
+		if (count == 0) {
+			throw new EmptyCollectionException("Error, no hay elementos\n");
+		}
+		
+		for (int i = 0; i < count; i++) {
+			if (data[i].equals(elem)) {
+				
+				while (i < count - 1) {
+					data[i] = data[i + 1];
+					i++;
+				}
+				data[count - 1] = null;
+				count--;
+				return elem;
+			}
+		}
+		throw new NoSuchElementException("Error, el elemento no está en el conjunto\n");
+		
+	}
+
+	@Override
+	public T getElemPos(int position) {
+		if (position < 1 || position > size()) {
+			throw new IllegalArgumentException("Error, la posición no es un valor permitido\n");
+		}
+		
+		return data[position - 1];
+	}
+
+	
+
+	@Override
+	public int getPosLast(T elem) {
+		if (elem == null) {
+			throw new NullPointerException("Error, el elemento no puede ser null\n");
+		}
+		
+		for (int i = count - 1; i >= 0; i--) {
+			if (data[i].equals(elem)) {
+				return i + 1;
+			}
+		}
+		throw new NoSuchElementException("Error, el elemento no está en la lista\n");
+		
+	}
+
+	
+
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		
+		sb.append("(");
+		for (int i = 0; i < count; i++) {
+		    sb.append(data[i]).append(" ");
+		}
+		sb.append(")");
+		
+		
+		return sb.toString();
+	}
+
+	
+
+	@Override
+	public int removeLastElem(T elem) throws EmptyCollectionException {
+		
+		if (elem == null) {
+			throw new NullPointerException("Error, el elemento no puede ser nulo\n");
+		}
+		
+		if (count == 0) {
+			throw new EmptyCollectionException("Error, no hay elementos\n");
+		}
+		
+		for (int i = count - 1; i >= 0; i--) {
+			if (data[i].equals(elem)) {
+				int posicion = i + 1;
+				while (i < count - 1) {
+					data[i] = data[i + 1];
+					i++;
+				}
+				data[count - 1] = null;
+				count--;
+				return posicion;
+			}
+		}
+		throw new NoSuchElementException("Error, el elemento no estaba en la colección\n");
+	}
+
+	@Override
+	public T mostFrequent() throws EmptyCollectionException{
+		if (count == 0) {
+			throw new EmptyCollectionException("Error, no hay elementos\n");
+		}
+		
+		int masFrecuente = 0;
+		T elemento_masFrecuente = null;
+		
+		for (int i = 0; i < count; i++) {
+			int mayor = 0;
+			for (int j = 0; j < count; j++) {
+				if (data[i].equals(data[j])) {
+					mayor++;
+				}
+				if (mayor > masFrecuente) {
+					masFrecuente = mayor;
+					elemento_masFrecuente = data[i];
+				}
+			}
+		}
+		return elemento_masFrecuente;
+	}
+
+	
+	@Override
+	public int intersec(EDList<T> other) {
+	
+		if (other == null) {
+			throw new NullPointerException("Error, el parámetro recibido no puede ser null\n");
+		}
+		
+		int contador = 0;
+		
+		for (int i = 0; i < count; i++) {
+			boolean encontrado = false;
+			Iterator<T> it = other.iterator();
+			
+			while (it.hasNext()) {
+				if (data[i].equals(it.next())) {
+			        encontrado = true;
+			        break;
+			    }
+			}
+			
+			int posicion = i;
+			if (!encontrado) {
+				while (posicion < count - 1) {
+					data[posicion] = data[posicion + 1];
+					posicion++;
+				}
+				data[count - 1] = null;
+				contador++;
+				i--;
+				count--;
+			}
+		}
+		return contador;
+	}
+
+	@Override
+	public EDList<T> split(int pos) {
+		if (pos < 1 || pos > size()) {
+			throw new IllegalArgumentException("Error, la posición tiene que estar entre 1 y size\n");
+		}
+		
+		EDList<T> lista1 = new ArrayEDList<>();
+		
+		for (int i = pos; i < count; i++) {
+			lista1.addLast(data[i]);
+			data[i] = null;
+		}
+		count = pos; 
+		
+		return lista1;
+	}
+
+	@Override
+	public Iterator<T> iterator() {
+		return new ArrayListIterator<>(this.data);
+	}
+
+	@Override
+	public Iterator<T> evenPositionsIterator() {
+		return new ArrayListEvenIterator<>(this.data);
+	}
+
+	@Override
+	public Iterator<T> oddPositionsIterator() {
+		return new ArrayListOddIterator<>(this.data);
+	}
+
+
+	@Override
+	public Iterator<T> progressIterator() {
+		return new ArrayListProgressIterator<>(this.data);
+	}
+
+	
+}

@@ -1,0 +1,251 @@
+package ule.edi.gym;
+
+
+
+public class GymArrayImpl implements IGym {
+	
+	 private static final Double DEFAULT_PRICE = 1.0;
+	 private static final int DEFAULT_NUM_LOCKERS = 20;
+
+	 private int numberOfLockers;
+	 private Double price;
+	 private Locker[] lockers;
+	 
+	 
+	 
+	public GymArrayImpl(int num_lockers, Double price) {
+		this.lockers = new Locker[num_lockers];
+	    this.price = price;
+	    this.numberOfLockers = num_lockers;
+		// TODO Auto-generated constructor stub
+		// IMPORTANTE: Crear el array de taquillas
+	}
+	
+	public GymArrayImpl() {
+		this.numberOfLockers = DEFAULT_NUM_LOCKERS;
+	    this.price = DEFAULT_PRICE;
+	    this.lockers = new Locker[this.numberOfLockers];
+		// TODO Auto-generated constructor stub
+		// IMPORTANTE: Crear el array de taquillas
+	}
+	@Override
+	public int getNumberOfLockers() {
+		return this.numberOfLockers;
+	}
+	@Override
+	public int getNumberOfOccupiedLockers() {
+		int contador = 0;
+	    for (int i = 0; i < lockers.length; i++) {
+	        if (this.lockers[i] != null) {
+	        	contador++;
+	        }
+	    }
+	    return contador;
+	}
+	@Override
+	public int getNumberOfAvailableLockers() {
+		int contador = 0;
+	    for (int i = 0; i < lockers.length; i++) {
+	        if (lockers[i] == null) { 
+	        	contador++;
+	        }
+	    }
+	    return contador;
+	}
+	@Override
+	public User getLocker(int pos) {
+		User usuario = null;
+	    if (pos >= 1 && pos <= numberOfLockers) {
+	        if (this.lockers[pos - 1] != null) {
+	            usuario = this.lockers[pos - 1].getUser();
+	        }
+	    }
+	    return usuario;
+	}
+	@Override
+	public User releaseLocker(int pos) {
+		if (pos >= 1 && pos <= numberOfLockers) {
+	        if (this.lockers[pos - 1] != null) {
+	            User persona = this.lockers[pos - 1].getUser();
+	            this.lockers[pos - 1] = null;
+	            return persona;
+	        } else {
+	            return null;
+	        }
+	    }
+	    return null;
+	}
+	@Override
+	public boolean rentLockerAtPosition(int pos, String nif, String name, int age, UserType userType) {
+		if (pos >= 1 && pos <= numberOfLockers) {
+			for (int i = 0; i < this.lockers.length; i++) {
+		        if (this.lockers[i] != null && this.lockers[i].isActive()) {
+		            if (this.lockers[i].getUser().getNif().equals(nif)) {
+		                return false;
+		            }
+		        }
+		    }
+		    User persona = new User(nif, name, age, userType);
+		    if (this.lockers[pos - 1] == null) {
+		        Locker taquilla = new Locker(pos, true);
+		        taquilla.setUser(persona);
+		        lockers[pos - 1] = taquilla;
+		        return true;
+		    }
+		}
+	    return false;
+	}
+	@Override
+	public int rentFirstAvailableLocker(String nif, String name, int age, UserType userType) {
+		int resultado = -1;
+		
+		for (int i = 0; i < lockers.length; i++) {
+			if (lockers[i] != null && lockers[i].getUser() != null) {
+				if (lockers[i].getUser().getNif().equals(nif)) {
+					return resultado;
+				}
+			}
+			
+		}
+		
+		int j = 0;
+		while (j < this.lockers.length && lockers[j] != null) {
+			j++;
+		}
+		
+		if (j == this.lockers.length) {
+			return resultado;
+		}
+		
+		
+		resultado = j + 1;
+		
+		
+		User usuario = new User(nif, name, age,userType);
+		Locker taquilla  = new Locker(resultado, true);
+		lockers[j] = taquilla;
+		lockers[j].setUser(usuario);
+		
+		return resultado;
+	}
+	@Override
+	public Double calculateLockerPrice(int pos) {
+		double price = 0.0;
+		
+		if (pos >= 1 && pos <= numberOfLockers) {
+			if (lockers[pos - 1] == null || lockers[pos - 1].getUser() == null || lockers[pos - 1].getUser().getUserType() == UserType.PREMIUM) {
+				return price;
+			} else {
+				price = this.price;
+			}
+		}
+		return price;
+	}
+	@Override
+	public Double calculateLockerPrice(String nif) {
+		double price = 0.0;
+		for (int i = 0; i < this.lockers.length; i++) {
+			if (this.lockers[i] != null && lockers[i].getUser() != null) {
+				if (lockers[i].getUser().getNif().equals(nif)) {
+					if (lockers[i].getUser().getUserType() == UserType.BASIC) {
+						price = this.price;
+					}
+				}
+			}
+		}
+		return price;
+	}
+	@Override
+	public Double getTotalCollection() {
+		double suma = 0.0;
+		for (int i = 0; i < this.lockers.length; i++) {
+			if (lockers[i] != null && lockers[i].getUser() != null) {
+				if (lockers[i].getUser().getUserType() == UserType.BASIC) {
+					suma = suma + this.price;
+				}
+			}
+		}
+		return suma;
+	}
+	@Override
+	public double getPrice() {
+		return this.price;
+	}
+	@Override
+	public int getNumberOfBasicUsersUnder18() {
+		int contador = 0;
+		for (int i = 0; i < lockers.length; i++) {
+			if (lockers[i] != null && lockers[i].isActive()) {
+				if (lockers[i].getUser().getUserType() == UserType.BASIC &&lockers[i].getUser().getAge() < 18) {
+					contador++;
+				}
+			}
+		}
+		return contador;
+	}
+	@Override
+	public int getNumberOfPremiumUsersUnder18() {
+		int contador = 0;
+		for (int i = 0; i < lockers.length; i++) {
+			if (lockers[i] != null && lockers[i].isActive()) {
+				if (lockers[i].getUser().getUserType() == UserType.PREMIUM &&lockers[i].getUser().getAge() < 18) {
+					contador++;
+				}
+			}
+		}
+		return contador;
+	}
+	@Override
+	public int getNumberOfBasicUsersOver60() {
+		int contador = 0;
+		for (int i = 0; i < lockers.length; i++) {
+			if (lockers[i] != null && lockers[i].isActive()) {
+				if (lockers[i].getUser().getUserType() == UserType.BASIC &&lockers[i].getUser().getAge() > 60) {
+					contador++;
+				}
+			}
+		}
+		return contador;
+	}
+	@Override
+	public int getNumberOfPremiumUsersOver60() {
+		int contador = 0;
+		for (int i = 0; i < lockers.length; i++) {
+			if (lockers[i] != null && lockers[i].isActive()) {
+				if (lockers[i].getUser().getUserType() == UserType.PREMIUM &&lockers[i].getUser().getAge() > 60) {
+					contador++;
+				}
+			}
+		}
+		return contador;
+	}
+
+	@Override
+	public boolean addInactiveLocker(int pos) {
+		boolean estado = false;
+	    if (pos >= 1 && pos <= this.numberOfLockers) {
+	        if (this.lockers[pos - 1] != null) {
+	            estado = false;
+	        } else {
+	            estado = true;
+	            this.lockers[pos - 1] = new Locker(pos, false);
+	        }
+	    }
+	    return estado;
+	}
+
+	@Override
+	public int getNumberOfInactiveLockers() {
+		int contador = 0;
+	    for (int i = 0; i < this.lockers.length; i++) {
+	        if (lockers[i] != null && !this.lockers[i].isActive()) {
+	        	contador++;
+	        }
+	    }
+	    return contador;
+	}
+	
+	
+	
+
+}	

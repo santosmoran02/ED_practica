@@ -1,0 +1,431 @@
+package ule.ed.list;
+
+import static org.junit.Assert.*;
+
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
+import org.junit.*;
+
+
+public class LinkedEDListTest {
+	private LinkedEDList<String> lista;
+	
+	@Before
+	public void test() {
+		 lista = new LinkedEDList<String>();
+	}
+
+
+	@Test
+	public void testVacia() {
+		assertEquals(0,lista.size());
+	}
+	
+	@Test
+	public void testLinkedListIterator_hasNext_conElementos() {
+		lista.addFirst("A");
+		Iterator<String> it = lista.iterator();
+		assertTrue(it.hasNext());
+	}
+	
+	@Test
+	public void testLinkedListIterator_hasNext_sinElementos() {
+		Iterator<String> it = lista.iterator();
+		assertFalse(it.hasNext());
+	}
+	
+	@Test (expected = NoSuchElementException.class)
+	public void testLinkedListIterator_next_sinElementosExcepcion() {
+		Iterator<String> it = lista.iterator();
+		it.next();
+	}
+	
+	@Test
+	public void LinkedListOddIterator_constructor() {
+		lista.addFirst("A");
+		lista.addPos("B", 2);
+		lista.addPos("C", 3);
+		
+		Iterator<String> it = lista.oddPositionsIterator();
+		
+		assertTrue(it.hasNext());
+		assertEquals("A", it.next());
+		assertEquals("C", it.next());
+		assertFalse(it.hasNext());
+	}
+	
+	@Test(expected = NoSuchElementException.class)
+	public void LinkedListOddIterator_sinElementos() {
+		Iterator<String> it = lista.oddPositionsIterator();
+		it.next();
+	}
+	
+	@Test
+	public void LinkedListEvenIterator() {
+		lista.addFirst("A");
+		lista.addPos("B", 2);
+		lista.addPos("C", 3);
+		lista.addPos("D", 4);
+		
+		Iterator<String> it = lista.evenPositionsIterator();
+		
+		assertTrue(it.hasNext());
+		assertEquals("B", it.next());
+		assertEquals("D", it.next());
+		assertFalse(it.hasNext());
+	}
+	
+	@Test(expected = NoSuchElementException.class)
+	public void LinkedListEvenIterator_sinElementos() {
+		Iterator<String> it = lista.evenPositionsIterator();
+		it.next();
+	}
+	
+	@Test
+	public void LinkedListProgressIterator() {
+		lista.addFirst("A");
+		lista.addPos("B", 2);
+		
+		Iterator<String> it = lista.progressIterator();
+		
+		assertTrue(it.hasNext());
+		assertEquals("A", it.next());
+		assertEquals("B", it.next());
+		assertEquals("B", it.next());
+		assertFalse(it.hasNext());
+	}
+	
+	@Test(expected = NoSuchElementException.class)
+	public void LinkedListProgressIterator_sinElementos() {
+		Iterator<String> it = lista.progressIterator();
+		it.next();
+	}
+	
+	@Test
+	public void testAddFirst() {
+		lista.addFirst("2");
+		Assert.assertFalse(lista.isEmpty());
+		Assert.assertEquals("(2 )", lista.toString());
+		lista.addFirst("3");
+		Assert.assertEquals("(3 2 )", lista.toString());
+		lista.addFirst("7");
+		Assert.assertEquals("(7 3 2 )", lista.toString());
+	}
+	
+	@Test(expected=EmptyCollectionException.class)
+	public void testRemoveFirst_Vacia() throws EmptyCollectionException{
+		lista.removeFirst();
+	}
+
+	@Test(expected=NullPointerException.class)
+	public void test_addFirst_ElementoNulo() {
+			lista.addFirst(null);
+	}
+	
+	
+	@Test
+	public void test_addLast() {
+		lista.addLast("5");
+		Assert.assertFalse(lista.isEmpty());
+		Assert.assertEquals("(5 )", lista.toString());
+		lista.addLast("3");
+		Assert.assertEquals("(5 3 )", lista.toString());
+	}
+	
+	@Test (expected = NullPointerException.class)
+	public void test_addLastNull() {
+		lista.addLast(null);
+	}
+	
+	@Test
+	public void test_addPenul() {
+		lista.addPenul("5");
+		Assert.assertFalse(lista.isEmpty());
+		Assert.assertEquals("(5 )", lista.toString());
+		lista.addPenul("3");
+		Assert.assertEquals("(3 5 )", lista.toString());
+		lista.addPenul("7");
+		Assert.assertEquals("(3 7 5 )", lista.toString());
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public void test_addPos() {
+		lista.addPos("5", 0);
+		Assert.assertFalse(lista.isEmpty());
+		Assert.assertEquals("(5 )", lista.toString());
+		lista.addPos("3", 1);
+		Assert.assertEquals("(5 3 )", lista.toString());
+		
+	}
+	
+	@Test
+	public void test_removeFirst() throws EmptyCollectionException {
+		lista.addFirst("5");
+		lista.addFirst("6");
+		Assert.assertEquals("(6 5 )", lista.toString());
+		lista.removeFirst();
+		Assert.assertEquals("(5 )", lista.toString());
+
+	}
+	
+	@Test
+	public void test_isEmpty_Falso() {
+		lista.addFirst("A");
+		assertFalse(lista.isEmpty());
+	}
+	
+	@Test(expected = NullPointerException.class)
+	public void test_addPenult_Null() {
+		lista.addPenul(null);
+	}
+	
+	@Test
+	public void test_addPenult_next_next() {
+		lista.addFirst("A");
+		lista.addFirst("B");
+		lista.addFirst("C");
+		lista.addFirst("D");
+		lista.addPenul("E");
+	}
+	
+	@Test(expected = NullPointerException.class)
+	public void test_addPos_NullPointerException() {
+		lista.addPos(null, 1);
+	}
+	
+	@Test
+	public void test_addPos_primeraPos() {
+		lista.addPos("A", 1);
+	}
+	
+	@Test
+	public void test_addPos_enMedio() {
+		lista.addFirst("A");
+		lista.addFirst("B");
+		lista.addFirst("C");
+		lista.addPos("D", 2);
+		lista.addPos("E", 3);
+	}
+	
+	@Test(expected = EmptyCollectionException.class)
+	public void test_removeLast_Null() throws EmptyCollectionException{
+		lista.removeLast();
+	}
+	
+	@Test
+	public void test_removeLast_conElementos() throws EmptyCollectionException{
+		lista.addFirst("A");
+		lista.removeLast();
+		lista.addFirst("A");
+		lista.addFirst("B");
+		lista.addFirst("C");
+		lista.addFirst("D");
+		lista.removeLast();
+	}
+	
+	@Test(expected = EmptyCollectionException.class)
+	public void test_removePenult_sinElementos() throws EmptyCollectionException{
+		lista.removePenul();
+	}
+	
+	@Test(expected = NoSuchElementException.class)
+	public void test_removePenult_unElemento() throws EmptyCollectionException{
+		lista.addFirst("A");
+		lista.removePenul();
+	}
+	
+	@Test
+	public void test_removePenult_next_next() throws EmptyCollectionException{
+		lista.addFirst("A");
+		lista.addFirst("B");
+		lista.removePenul();
+		lista.addFirst("B");
+		lista.addFirst("C");
+		lista.addFirst("D");
+		lista.removePenul();
+	}
+	
+	@Test(expected = EmptyCollectionException.class)
+	public void test_removeElem_Null() throws EmptyCollectionException{
+		lista.removeElem("A");
+	}
+	
+	@Test(expected = NoSuchElementException.class)
+	public void test_removeElem_noEsta() throws EmptyCollectionException{
+		lista.addFirst("A");
+		lista.addFirst("B");
+		lista.addFirst("C");
+		lista.removeElem("D");
+	}
+	
+	@Test
+	public void test_removeElem_primero() throws EmptyCollectionException{
+		lista.addFirst("A");
+		lista.removeElem("A");
+	}
+	
+	@Test
+	public void test_getElemPos() {
+		lista.addFirst("A");
+		lista.addFirst("B");
+		lista.addFirst("C");
+		lista.getElemPos(3);
+	}
+	
+	@Test(expected = NullPointerException.class)
+	public void test_getPosLast_Null() {
+		lista.getPosLast(null);
+	}
+	
+	@Test
+	public void test_getPosLast() {
+		lista.addFirst("D");
+		lista.addFirst("C");
+		lista.addFirst("B");
+		lista.addFirst("A");
+		assertEquals(3, lista.getPosLast("C"));
+		assertEquals(4, lista.getPosLast("D"));
+	}
+	
+	@Test(expected = NoSuchElementException.class)
+	public void test_getPosLast_noElemento() {
+		lista.getPosLast("A");
+	}
+	
+	@Test(expected = EmptyCollectionException.class)
+	public void test_removeLastElem_Null() throws EmptyCollectionException{
+		lista.removeLastElem("A");
+	}
+	
+	@Test
+	public void test_removeLastElem() throws EmptyCollectionException{
+		lista.addFirst("D");
+		lista.addFirst("C");
+		lista.addFirst("A");
+		lista.addFirst("B");
+		
+		lista.removeLastElem("B");
+		lista.removeLastElem("C");
+	}
+	
+	@Test(expected = EmptyCollectionException.class)
+	public void test_mostFrequent_Null() throws EmptyCollectionException{
+		lista.mostFrequent();
+	}
+	
+	@Test
+	public void test_mostFrequent() throws EmptyCollectionException{
+		lista.addFirst("A");
+		lista.addFirst("B");
+		lista.addFirst("B");
+		lista.addFirst("B");
+		lista.addFirst("C");
+		lista.mostFrequent();
+	}
+	
+	@Test(expected = NullPointerException.class)
+	public void test_intersect_Nulo() {
+		lista.addFirst("A");
+		lista.addFirst("B");
+		ArrayEDList<String> lista1 = new ArrayEDList<String>();
+		lista.intersec(lista1);
+	}
+	
+	@Test(expected = NoSuchElementException.class)
+	public void test_removeLastElem_sinElementos() throws EmptyCollectionException{
+		lista.addFirst("A");
+		lista.addFirst("B");
+		lista.removeLastElem("C");
+	}
+	
+	@Test
+	public void test_removeLast() throws EmptyCollectionException {
+		lista.addFirst("5");
+		lista.addFirst("6");
+		Assert.assertEquals("(6 5 )", lista.toString());
+		lista.removeLast();
+		Assert.assertEquals("(6 )", lista.toString());
+	}
+	
+	
+	@Test
+	public void test_removePenult() throws EmptyCollectionException {
+		lista.addFirst("5");
+		lista.addFirst("6");
+		lista.addFirst("9");
+		Assert.assertEquals("(9 6 5 )", lista.toString());
+		lista.removePenul();
+		Assert.assertEquals("(9 5 )", lista.toString());
+	}
+	
+	@Test
+	public void test_removeElem() throws EmptyCollectionException {
+		lista.addFirst("5");
+		lista.addFirst("6");
+		Assert.assertEquals("(6 5 )", lista.toString());
+		lista.removeElem("5");
+		Assert.assertEquals("(6 )", lista.toString());
+	}
+	
+	
+	
+	@Test
+	public void test_iterator() {
+		lista.addFirst("5");
+		lista.addFirst("6");
+		lista.addFirst("7");
+		Iterator<String> it = lista.iterator();
+		Assert.assertEquals("7", it.next());
+	}
+	
+	@Test
+	public void test_iteratorEven() {
+		lista.addFirst("5");
+		lista.addFirst("6");
+		lista.addFirst("7");
+		Iterator<String> it = lista.evenPositionsIterator();
+		Assert.assertEquals("6", it.next());
+	}
+	
+	
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void test_getElemPosIllegal() {
+		lista.addFirst("5");
+		lista.addFirst("6");
+		lista.addFirst("7");
+		Assert.assertEquals("6", lista.getElemPos(7));
+
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void test_getElemPosIllegal2() {
+		lista.addFirst("5");
+		lista.addFirst("6");
+		lista.addFirst("7");
+		Assert.assertEquals("6", lista.getElemPos(-5));
+
+	}
+	
+	
+	@Test
+	public void test_clear() {
+		lista.addLast("5");
+		lista.addLast("6");
+		lista.addLast("7");
+		lista.clear();
+		Assert.assertEquals("()", lista.toString());
+	}
+	
+	@Test
+	public void test_size() {
+		lista.addLast("5");
+		lista.addLast("6");
+		lista.addLast("7");
+		Assert.assertEquals(3, lista.size());
+	}
+	
+
+	
+}

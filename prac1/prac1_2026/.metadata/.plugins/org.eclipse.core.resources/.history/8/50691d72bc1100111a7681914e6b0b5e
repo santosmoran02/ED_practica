@@ -1,0 +1,72 @@
+package ule.edi.gym;
+
+
+public class User {
+
+	private String name;
+	private String nif;
+	private int age;
+	 private UserType userType;
+
+	public User(String nif, String name, int age, UserType userType) {
+	}
+	
+	public String getName() {
+		//TODO 
+		return null;
+	}
+	
+	public UserType getUserType() {
+    	// TODO
+    	return null;
+    }
+    
+    public void setUserType(UserType userType) {
+    	// TODO 
+    }
+
+	public void setName(String name) {
+		//TODO 
+	}
+
+	public String getNif() {
+		//TODO 
+		return null;
+	}
+
+	public void setNif(String nif) {
+		//TODO 
+	}
+
+	public int getAge() {
+		//TODO 
+		return 0;
+	}
+
+	public void setAge(int age) {
+		//TODO 
+	}
+
+	public User(String nif, String name, int edad) {
+		//TODO 
+		
+	}
+
+
+	@Override
+	public String toString() {
+		return "{ NIF: "+ nif + "  Name : " + name + ", Age:" + age + "}";
+	}
+	
+    @Override
+	public boolean equals(Object obj) {
+	
+		// TODO 
+		// Dos usuario son iguales si son iguales sus nifs
+    	
+	
+    	return false;
+	
+}
+
+}

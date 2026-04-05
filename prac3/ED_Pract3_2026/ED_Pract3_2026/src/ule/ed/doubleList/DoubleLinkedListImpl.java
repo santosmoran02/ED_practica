@@ -1,0 +1,495 @@
+package ule.ed.doubleList;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
+public class DoubleLinkedListImpl<T> implements IDoubleList<T> {
+
+
+	//	referencia al primer nodo de la lista
+	private DoubleNode<T> front;
+
+	//	referencia al Último nodo de la lista
+	private DoubleNode<T> last;
+
+
+	private class DoubleNode<T> {
+
+		DoubleNode(T element, int count) {
+			this.elem = element;
+			this.count= count;
+			this.next = null;
+			this.prev = null;
+		}
+
+		T elem;
+        int count;
+		DoubleNode<T> next;
+		DoubleNode<T> prev;
+	}
+
+	///// ITERADOR normal //////////
+
+	@SuppressWarnings("hiding")
+	private class DoubleLinkedListIterator<T> implements Iterator<T> {
+		DoubleNode<T> node;
+		public DoubleLinkedListIterator(DoubleNode<T> aux) {
+			node = aux;
+		}
+
+		@Override
+		public boolean hasNext() {
+			return node != null;
+		}
+	
+
+		@Override
+		public T next() {
+			T elemento = node.elem;
+			node = node.next;
+			return elemento;
+		}
+	}
+	
+	@Override
+	public Iterator<T> iterator(){
+		return new DoubleLinkedListIterator<T>(front);
+	}
+
+	////// FIN ITERATOR
+
+
+
+	@SuppressWarnings("hiding")
+	private class DoubleLinkedListIteratorReverse<T> implements Iterator<T> {
+		DoubleNode<T> node;
+		public DoubleLinkedListIteratorReverse(DoubleNode<T> aux) {
+			node = aux;	
+			}
+
+		@Override
+		public boolean hasNext() {
+			return node != null;
+			}
+
+		@Override
+		public T next() {
+			T elemento = node.elem;
+			node = node.prev;
+			return elemento;
+			
+		}
+	}
+	
+	@Override
+	public Iterator<T> reverseIterator(){
+		return new DoubleLinkedListIteratorReverse<T>(last);
+	}
+	
+	@SuppressWarnings("hiding")
+	private class DoubleLinkedListIteratorInstance<T> implements Iterator<T> {
+		DoubleNode<T> node;
+		int contador = 0;
+		public DoubleLinkedListIteratorInstance(DoubleNode<T> aux) {
+			node = aux;	
+			}
+
+		@Override
+		public boolean hasNext() {
+			return node != null;
+			}
+
+		@Override
+		public T next() {
+			
+			T elemento = node.elem;
+			contador++;
+			
+			if (contador == node.count) {
+				node = node.next;
+				contador = 0;
+			}
+			
+			return elemento;
+			
+		}
+	}
+	
+	@Override
+	public Iterator<T> iteratorInstance() {
+	    return new DoubleLinkedListIteratorInstance<T>(front);
+	}
+	
+	@SuppressWarnings("hiding")
+	private class DoubleLinkedListIteratorInstanceReverse<T> implements Iterator<T> {
+		DoubleNode<T> node;
+		int contador = 0;
+		public DoubleLinkedListIteratorInstanceReverse(DoubleNode<T> aux) {
+			node = aux;	
+			}
+
+		@Override
+		public boolean hasNext() {
+			return node != null;
+		}
+
+		@Override
+		public T next() {
+			
+			T elemento = node.elem;
+			contador++;
+			
+			if (contador == node.count) {
+				node = node.prev;
+				contador = 0;
+			}
+			
+			return elemento;
+			
+		}
+	}
+	
+	
+	@Override
+	public Iterator<T> reverseIteratorInstance(){
+		return new DoubleLinkedListIteratorInstanceReverse<T>(last);
+	}
+	
+	
+	
+	// TODO: añadir clases para el resto de iteradores
+
+	/////
+
+	@SafeVarargs
+	public DoubleLinkedListImpl(T...v ) {
+		// permite añadir varios elementos a la lista en el constructor
+		for (T elem:v) {
+			this.addLast(elem,1);
+		}
+	}
+
+	@Override
+	public boolean isEmpty() {
+		// TODO Auto-generated method stub
+		return last == null && front == null;
+	}
+
+	@Override
+	public void clear() {
+		this.front = null;
+		this.last = null;
+	}
+
+	@Override
+	public void addFirst(T elem, int n) {
+		if (elem == null) {
+			throw new NullPointerException("Error, el elemento no puede ser null\n");
+		}
+		
+		if (n <= 0) {
+			throw new IllegalArgumentException("Error, el número tiene que ser mayor que 0\n");
+		}
+		
+		DoubleNode<T> aux = front;
+		
+		if (contains(elem)) {
+			while(!aux.elem.equals(elem)) {
+				aux = aux.next;
+			}
+			aux.count = aux.count + n;
+		} else {
+			DoubleNode<T> nodoNuevo = new DoubleNode<>(elem, n);
+			if (size() == 0) {
+				front = nodoNuevo;
+				last = nodoNuevo;
+			} else {
+				nodoNuevo.next = front;
+				front.prev = nodoNuevo;
+				front = nodoNuevo;
+			}
+		}
+		
+	}
+
+	@Override
+	public void addLast(T elem, int n) {
+		if (elem == null) {
+			throw new NullPointerException("Error, el elemento no puede ser nulo\n");
+		}
+		
+		if (n <= 0) {
+			throw new IllegalArgumentException("Error, el número no puede ser menor o igual que 0\n");
+		}
+		
+		DoubleNode<T> aux = front;
+		
+		
+		if (contains(elem)) {
+			while (!aux.elem.equals(elem)) {
+				aux = aux.next;
+			}
+			aux.count = aux.count + n;
+		} else {
+			DoubleNode<T> nodoNuevo = new DoubleNode<>(elem, n);
+			
+			if (size() == 0) {
+				front = nodoNuevo;
+				last = nodoNuevo;
+			} else {
+				nodoNuevo.prev = last;
+				last.next = nodoNuevo;
+				last = nodoNuevo;	
+			}
+		}
+		
+		
+	}
+
+	@Override
+	public int removeFirst(int num) throws EmptyCollectionException {
+		if (num <= 0) {
+	        throw new IllegalArgumentException();
+	    }
+
+	    if (size() == 0) {
+	        throw new EmptyCollectionException("Error, la lista está vacía\n");
+	    }
+
+	    DoubleNode<T> aux = front;
+	    int eliminados = 0;
+
+	    if (num >= front.count) {
+	        eliminados = aux.count;
+	        front = aux.next;
+	        if (front != null) {
+	            front.prev = null;
+	        } else {
+	            last = null;
+	        }
+	    } else {
+	        aux.count = aux.count - num;
+	        eliminados = num;
+	    }
+	    return eliminados;
+	}
+
+
+	@Override
+	public T removePos(int pos, int num) throws EmptyCollectionException {
+		if (isEmpty()) {
+			throw new EmptyCollectionException("Error, la lista está vacía\n");
+		}
+		
+		if (pos < 1 || pos > size() || num <  1) {
+			throw new IllegalArgumentException("Error, la posición o el número no están en el rango de valores correctos\n");
+		}
+		
+		DoubleNode<T> aux = front;
+		int posicion = 1;
+		
+		while (posicion < pos) {
+			aux = aux.next;
+			posicion++;
+		}
+		
+		T elemento = aux.elem;
+		
+		if (num >= aux.count) {
+			if (size() == 1) {
+				front = null;
+				last = null;
+			} else if (size() > 1 && posicion == 1) {
+				front = aux.next;
+				aux.next.prev = null;
+			} else if (posicion == size()) {
+				last = aux.prev;
+				aux.prev.next = null;
+			} else {
+				aux.next.prev = aux.prev;
+				aux.prev.next = aux.next;
+			}
+		} else {
+			aux.count = aux.count - num;
+		}
+		return elemento;
+	}
+
+	@Override
+	public int remove(T elem, int num) throws EmptyCollectionException {
+		
+		if (elem == null) {
+			throw new NullPointerException("Error, el elemento no puede ser nulo\n");
+		}
+		
+		if (isEmpty()) {
+			throw new EmptyCollectionException("Error, la lista está vacía\n");
+		}
+		
+		if (!contains(elem)) {
+			throw new NoSuchElementException("Error, el elemento no está contenido en la lista\n");
+		}
+		
+		if (num < 1) {
+			throw new IllegalArgumentException("Error, el número no puede ser menor que 1\n");
+		}
+		
+		DoubleNode<T> aux = front;
+		int posicion = 1;
+		
+		while(!aux.elem.equals(elem)) {
+			aux = aux.next;
+			posicion++;
+		}
+		
+		int eliminados = 0;
+		
+		if (num >= aux.count) {
+			if (size() == 1) {
+				front = null;
+				last = null;
+			} else if (posicion == 1 && size() > 1) {
+				front = front.next;
+				front.prev = null;
+			} else if (posicion == size()){
+				last = aux.prev;
+				aux.prev.next = null;
+			} else {
+				aux.prev.next = aux.next;
+				aux.next.prev = aux.prev;
+			}
+			eliminados = aux.count;
+			
+		} else {
+			aux.count = aux.count - num;
+			eliminados = num;
+		}
+		
+		return eliminados;
+	}
+
+	@Override
+	public boolean contains(T elem) {
+		if (elem == null) {
+			throw new NullPointerException("Error, el elemento no puede ser nulo\n");
+		}
+		
+		DoubleNode<T> aux = front;
+		boolean encontrado = false;
+		
+		while(aux != null) {
+			if (aux.elem.equals(elem)) {
+				return true;
+			}
+			aux = aux.next;
+		}
+		return encontrado;
+	}
+
+	@Override
+	public int size() {
+		int contador = 0;
+		DoubleNode<T> aux = front;
+		while (aux != null) {
+			aux  = aux.next;
+			contador++;
+		}
+		return contador;
+	}
+
+	@Override
+	public int countInstances() {
+		DoubleNode<T> aux = front;
+		int contador = 0;
+		while(aux != null) {
+			contador += aux.count;
+			aux = aux.next;
+			
+		}
+		return contador;
+	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("[");
+		DoubleNode<T> aux = front;
+		while(aux != null) {
+			sb.append(aux.elem.toString() + "(" + aux.count + ") ");
+			aux = aux.next;
+		}
+		sb.append("]");
+		return sb.toString();
+	}
+
+	@Override
+	public String toStringReverse() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("[");
+
+		DoubleNode<T> aux = last;
+		while(aux != null) {
+			sb.append(aux.elem.toString() + "(" + aux.count + ") ");
+			aux = aux.prev;
+		}
+		sb.append("]");
+		return sb.toString();
+	}
+
+	@Override
+	public T removeAllLast() throws EmptyCollectionException {
+		if (isEmpty()) {
+			throw new EmptyCollectionException("Error, el contador del último elemento está a 0\n");
+		}
+		
+		T elemento = last.elem;
+		
+		if (size() == 1) {
+			front = null;
+			last = null;
+		} else {
+			last = last.prev;
+			last.next = null;
+		}
+		return elemento;
+	}
+
+	@Override
+	public int getPosElem(T elem) throws EmptyCollectionException {
+		if (elem == null) {
+			throw new NullPointerException("Error, el elemento no puede ser nulo\n");
+		}
+		
+		if (isEmpty()) {
+			throw new EmptyCollectionException("Error, la lista está vacía\n");
+		}
+		
+		if (!contains(elem)) {
+			throw new NoSuchElementException("Error, el elemento no está en la lista\n");
+		}
+		
+		int posicion = 1;
+		DoubleNode<T> aux = front;
+		
+		while(!aux.elem.equals(elem)) {
+			aux = aux.next;
+			posicion++;
+		}
+		
+		return posicion;
+	}
+
+	@Override
+	public ArrayList<T> intersection(IDoubleList<T> other) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	
+
+	
+
+
+
+}

@@ -1,0 +1,116 @@
+package ule.edi.gym;
+
+
+
+public class GymArrayImpl implements IGym {
+	
+	 private static final Double DEFAULT_PRICE = 1.0;
+	 private static final int DEFAULT_NUM_LOCKERS = 20;
+
+	 private int numberOfLockers;
+	 private Double price;
+	 private Locker[] lockers;
+	 
+	 
+	 
+	public GymArrayImpl(int num_lockers, Double price) {
+		// TODO Auto-generated constructor stub
+		// IMPORTANTE: Crear el array de taquillas
+	}
+	
+	public GymArrayImpl() {
+		// TODO Auto-generated constructor stub
+		// IMPORTANTE: Crear el array de taquillas
+	}
+	@Override
+	public int getNumberOfLockers() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	@Override
+	public int getNumberOfOccupiedLockers() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	@Override
+	public int getNumberOfAvailableLockers() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	@Override
+	public User getLocker(int pos) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public User releaseLocker(int pos) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public boolean rentLockerAtPosition(int pos, String nif, String name, int age, UserType userType) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	@Override
+	public int rentFirstAvailableLocker(String nif, String name, int age, UserType userType) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	@Override
+	public Double calculateLockerPrice(int pos) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public Double calculateLockerPrice(String nif) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public Double getTotalCollection() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public double getPrice() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	@Override
+	public int getNumberOfBasicUsersUnder18() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	@Override
+	public int getNumberOfPremiumUsersUnder18() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	@Override
+	public int getNumberOfBasicUsersOver60() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	@Override
+	public int getNumberOfPremiumUsersOver60() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public boolean addInactiveLocker(int pos) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public int getNumberOfInactiveLockers() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	
+	
+	
+
+}	

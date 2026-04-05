@@ -1,0 +1,357 @@
+package ule.edi.gym;
+
+import static org.junit.Assert.*;
+
+import org.junit.*;
+
+
+public class GymArrayImplTests {
+	
+	    private GymArrayImpl gym, gym1;
+
+	    @Before
+	    public void setUp() {
+	        gym = new GymArrayImpl(5,1.0);// 5 taquillas, coste=1 euro
+	        gym1 = new GymArrayImpl();
+	    }
+
+	    @Test
+	    public void testInitialState() {
+	        assertEquals(5, gym.getNumberOfLockers());
+	        assertEquals(0, gym.getNumberOfOccupiedLockers());
+	        assertEquals(5, gym.getNumberOfAvailableLockers());
+	    }
+	    
+	    @Test
+	    public void testSegundoGymArrayImpl() {
+	    	assertEquals(1.0, gym1.getPrice(), 0.001);
+	    	assertEquals(20, gym1.getNumberOfLockers());
+	    	
+	    	
+	    }
+
+	    @Test
+	    public void testRentLockerAtPosition_ok() {
+	        boolean ok = gym.rentLockerAtPosition(3, "111A", "Ana", 20, UserType.BASIC);
+	        assertTrue(ok);
+
+	        assertEquals(1, gym.getNumberOfOccupiedLockers());
+	        assertEquals(4, gym.getNumberOfAvailableLockers());
+
+	        assertNotNull(gym.getLocker(3));
+	        assertEquals("111A", gym.getLocker(3).getNif());
+	    }
+	    
+	    @Test
+	    public void testGetLockerPosicionFueraDeRango() {
+	    	
+	    	assertNull(gym.getLocker(0));
+	    	assertNull(gym.getLocker(1200));
+	    	assertNull(gym.getLocker(1));
+	    }
+	    
+	    @Test
+	    public void testReleaseLockerNull() {
+	    	gym.addInactiveLocker(1);
+	    	assertNull(gym.releaseLocker(1));
+	    }
+	    
+	    @Test
+	    public void testRentFirstAvailableLockerInactive() {
+	    	gym.addInactiveLocker(1);
+	    	gym.addInactiveLocker(2);
+	    	gym.addInactiveLocker(3);
+	    	gym.addInactiveLocker(4);
+	    	gym.addInactiveLocker(5);
+	    	assertEquals(-1, gym.rentFirstAvailableLocker("Paco", "1111", 19, UserType.BASIC));
+	    }
+	    
+	    @Test
+	    public void testRentFirstAvailableLocker1Inactive() {
+	    	gym.addInactiveLocker(1);
+	    	assertEquals(2, gym.rentFirstAvailableLocker("111A", "Juan", 24, UserType.BASIC));
+	    }
+	    
+	    @Test
+	    public void testRentFirstAvailableLockerAlreadyHasUser() {
+	    	gym.rentLockerAtPosition(1, "111A", "Paco", 19, UserType.BASIC);
+	    	assertEquals(-1, gym.rentFirstAvailableLocker("111A", "Paco", 19, UserType.BASIC));
+	    	
+	    }
+
+	    @Test
+	    public void testRentLockerAtPosition_failsIfOccupied() {
+	        assertTrue(gym.rentLockerAtPosition(2, "111A", "Ana", 20, UserType.BASIC));
+	        assertFalse(gym.rentLockerAtPosition(2, "222B", "Luis", 21, UserType.BASIC));
+	    }
+	    
+	    @Test
+	    public void testCalculateLockerPrice_invalidPos() {
+	    	assertEquals(0.0, gym.calculateLockerPrice(50), 0.001);
+	    	assertEquals(0.0, gym.calculateLockerPrice(-2), 0.001);
+	    }
+	    
+	    @Test
+	    public void testCalculateLockerPrice_inactive() {
+	    	gym.addInactiveLocker(1);
+	    	assertEquals(0.0, gym.calculateLockerPrice(null), 0.001);
+	    }
+	    
+	    @Test
+	    public void testCalculateLockerPrice_invalidNIF() {
+	    	gym.rentLockerAtPosition(1, "1", "a", 20, UserType.BASIC);
+	    	gym.rentLockerAtPosition(2, "2", "b", 21, UserType.BASIC);
+	    	gym.rentLockerAtPosition(3, "3", "c", 22, UserType.BASIC);
+	    	gym.rentLockerAtPosition(4, "4", "d", 23, UserType.BASIC);
+	    	gym.rentLockerAtPosition(5, "5", "e", 24, UserType.BASIC);
+	    	assertEquals(0.0, gym.calculateLockerPrice("12345678"), 0.001);
+	    }
+	    
+	    @Test
+	    public void testRentLockerAtPosition_Inactive() {
+	    	gym.addInactiveLocker(1);
+	    	assertFalse(gym.rentLockerAtPosition(1, "11A", "Paco", 24, UserType.BASIC));
+	    	assertTrue(gym.rentLockerAtPosition(2, "111A", "Paco", 19, UserType.BASIC));
+	    }
+	    
+	    @Test
+	    public void testGetTotalColection() {
+	    	gym.addInactiveLocker(1);
+	    	gym.addInactiveLocker(2);
+	    	gym.addInactiveLocker(3);
+	    	gym.addInactiveLocker(4);
+	    	gym.addInactiveLocker(5);
+	    	assertEquals(0.0, gym.getTotalCollection(), 0.001);
+	    }
+	    
+	    @Test
+	    public void testGetInactiveLockers_inactive() {
+	    	gym.rentLockerAtPosition(2, "1", "a", 30, UserType.BASIC);
+	    	gym.rentLockerAtPosition(2, "11a", "a", 30, UserType.BASIC);
+	    	gym.rentLockerAtPosition(3, "11", "a", 30, UserType.BASIC);
+	    	gym.rentLockerAtPosition(4, "11aa", "a", 30, UserType.BASIC);
+	    	gym.rentLockerAtPosition(5, "11aaa", "a", 30, UserType.BASIC);
+	    	assertEquals(0, gym.getNumberOfInactiveLockers());
+	    }
+	    
+	    @Test
+	    public void testInactiveLocker_invalidPos() {
+	    	assertFalse(gym.addInactiveLocker(-2));
+	    }
+	    
+	    @Test
+	    public void testRentLockerAtPositionInvalidPos() {
+	    	assertFalse(gym.rentLockerAtPosition(10, "111A", "Juan", 32, UserType.BASIC));
+	    	assertFalse(gym.rentLockerAtPosition(-2, "111A", "Juan", 32, UserType.BASIC));
+	    }
+	    
+	    @Test 
+	    public void testRentLockerAtPosition_sameNif() {
+	    	gym.rentLockerAtPosition(1, "111A", "Paco", 19, UserType.BASIC);
+	    	assertFalse(gym.rentLockerAtPosition(3, "111A", "Paco", 19, UserType.BASIC));
+	    }
+
+	    @Test
+	    public void testUserCannotHaveTwoLockers() {
+	        assertTrue(gym.rentLockerAtPosition(1, "111A", "Ana", 20, UserType.BASIC));
+	        assertFalse(gym.rentLockerAtPosition(4, "111A", "Ana", 20, UserType.BASIC));
+	    }
+
+	    @Test
+	    public void testRentFirstAvailableLocker_assignsFirst() {
+	        // ocupa 1 y 2
+	        assertTrue(gym.rentLockerAtPosition(1, "111A", "Ana", 20, UserType.BASIC));
+	        assertTrue(gym.rentLockerAtPosition(2, "222B", "Luis", 21, UserType.BASIC));
+
+	        int pos = gym.rentFirstAvailableLocker("333C", "Laura", 19, UserType.BASIC);
+	        assertEquals(3, pos); // primera libre debería ser la 3
+	    }
+
+	    @Test
+	    public void testPremiumPaysZero_basicPaysPrice() {
+	        // BASIC normal
+	        assertTrue(gym.rentLockerAtPosition(1, "111A", "Ana", 20, UserType.BASIC));
+	        // PREMIUM normal
+	        assertTrue(gym.rentLockerAtPosition(2, "222B", "Luis", 21, UserType.PREMIUM));
+
+	        // total = price (solo BASIC)
+	        assertEquals(gym.getPrice(), gym.getTotalCollection(), 1.0);
+	    }
+	    
+	    @Test
+	    public void testReleaseLocker_freeLocker() {
+	    	assertNull(gym.releaseLocker(1));
+	    }
+	    
+	    @Test
+	    public void testReleaseLocker_invalidPosition() {
+	    	assertNull(gym.releaseLocker(0));
+	    	assertNull(gym.releaseLocker(6));
+	    }
+	    
+	    @Test
+	    public void testReleaseLocker_occupiedPosition() {
+	    	gym.rentLockerAtPosition(3, "1111A", "Paco", 24, UserType.BASIC);
+	    	assertEquals(24, gym.getLocker(3).getAge());
+	    	assertEquals("Paco", gym.getLocker(3).getName());
+	    	assertEquals("1111A", gym.getLocker(3).getNif());
+	    	assertNotNull(gym.releaseLocker(3));
+	    }
+	    
+	    @Test
+	    public void testCalculateLockerPrice_premiumUser() {
+	    	gym.rentLockerAtPosition(3, "1111A", "Paco", 24, UserType.PREMIUM);
+	    	assertEquals(0.0, gym.calculateLockerPrice(3), 0.001);
+	    }
+	    
+	    @Test
+	    public void testCalculateLockerPrice_emptyLocker() {
+	    	assertEquals(0.0, gym.calculateLockerPrice(1), 0.001);
+	    }
+	    
+	    @Test
+	    public void testCalculateLockerPrice_basicUser() {
+	    	gym.rentLockerAtPosition(3, "1111A", "Paco", 24, UserType.BASIC);
+	    	assertEquals(1.0, gym.calculateLockerPrice(3), 0.001);
+	    }
+	    
+	    @Test
+	    public void testCalculateLockerPrice_nullUser() {
+	    	gym.addInactiveLocker(1);
+	    	assertEquals(0.0, gym.calculateLockerPrice(1), 0.001);
+	    }
+	    
+	    @Test
+	    public void testCalulateLockerPrice_nifPremium() {
+	    	gym.rentLockerAtPosition(3, "1111A", "Paco", 24, UserType.PREMIUM);
+	    	assertEquals(0.0, gym.calculateLockerPrice("1111A"), 0.001);
+	    }
+	    
+	    @Test
+	    public void testCalulateLockerPrice_nifBasic() {
+	    	gym.rentLockerAtPosition(3, "1111A", "Paco", 24, UserType.BASIC);
+	    	assertEquals(1.0, gym.calculateLockerPrice("1111A"), 0.001);
+	    }
+	    
+	    @Test
+	    public void testCalculateLockerPrice_nifNoEncontrado() {
+	    	assertEquals(0.0, gym.calculateLockerPrice("123456Y"), 0.001);
+	    }
+	    
+	    @Test
+	    public void testGetNumberOfBasicUsersUnder18() {
+	    	assertEquals(0, gym.getNumberOfBasicUsersUnder18());
+	    	gym.rentLockerAtPosition(1, "1234A", "Paco", 17, UserType.BASIC);
+	    	gym.rentLockerAtPosition(2, "1234B", "Juan", 17, UserType.PREMIUM);
+	    	gym.rentLockerAtPosition(3, "1234C", "Marco", 18, UserType.BASIC);
+	    	gym.rentLockerAtPosition(4, "1234D", "Nicol", 19, UserType.PREMIUM);
+	    	gym.addInactiveLocker(5);
+	    	
+	    	assertEquals(1, gym.getNumberOfBasicUsersUnder18());
+	    	
+	    }
+	    
+	    @Test
+	    public void testGetNumberOfPremiumUsersUnder18() {
+	    	assertEquals(0, gym.getNumberOfPremiumUsersUnder18());
+	    	gym.rentLockerAtPosition(1, "1234A", "Paco", 17, UserType.BASIC);
+	    	gym.rentLockerAtPosition(2, "1234B", "Juan", 17, UserType.PREMIUM);
+	    	gym.rentLockerAtPosition(3, "1234C", "Marco", 18, UserType.BASIC);
+	    	gym.rentLockerAtPosition(4, "1234D", "Nicol", 19, UserType.PREMIUM);
+	    	gym.addInactiveLocker(5);
+	    	
+	    	assertEquals(1, gym.getNumberOfPremiumUsersUnder18());
+	    	
+	    }
+	    
+	    @Test
+	    public void testGetNumberOfBasicUsersOver60() {
+	    	assertEquals(0, gym.getNumberOfBasicUsersOver60());
+	    	gym.rentLockerAtPosition(1, "1234A", "Paco", 61, UserType.BASIC);
+	    	gym.rentLockerAtPosition(2, "1234B", "Juan", 61, UserType.PREMIUM);
+	    	gym.rentLockerAtPosition(3, "1234C", "Marco", 18, UserType.BASIC);
+	    	gym.rentLockerAtPosition(4, "1234D", "Nicol", 19, UserType.PREMIUM);
+	    	gym.addInactiveLocker(5);
+	    	
+	    	assertEquals(1, gym.getNumberOfBasicUsersOver60());
+	    	
+	    }
+	    
+	    @Test
+	    public void testGetNumberOfPremiumUsersOver60() {
+	    	assertEquals(0, gym.getNumberOfPremiumUsersOver60());
+	    	gym.rentLockerAtPosition(1, "1234A", "Paco", 61, UserType.BASIC);
+	    	gym.rentLockerAtPosition(2, "1234B", "Juan", 61, UserType.PREMIUM);
+	    	gym.rentLockerAtPosition(3, "1234C", "Marco", 18, UserType.BASIC);
+	    	gym.rentLockerAtPosition(4, "1234D", "Nicol", 19, UserType.PREMIUM);
+	    	gym.addInactiveLocker(5);
+	    	
+	    	assertEquals(1, gym.getNumberOfPremiumUsersOver60());
+	    	
+	    }
+	    
+	    @Test
+	    public void testAddInactiveLocker_withUser() {
+	    	gym.rentLockerAtPosition(1, "111A", "Paco", 19, UserType.BASIC);
+	    	assertFalse(gym.addInactiveLocker(1));
+	    }
+	    
+	    @Test
+	    public void testAddInactiveLocker_invalidPosition() {
+	    	assertFalse(gym.addInactiveLocker(6));
+	    }
+	    
+	    @Test
+	    public void testAddInactiveLocker_emptyLocker() {
+	    	assertTrue(gym.addInactiveLocker(1));
+	    }
+	    
+	    @Test
+	    public void testGetNumberOfInactiveLockers() {
+	    	assertEquals(0, gym.getNumberOfInactiveLockers());
+	    	gym.addInactiveLocker(1);
+	    	assertEquals(1, gym.getNumberOfInactiveLockers());
+	    	gym.addInactiveLocker(2);
+	    	assertEquals(2, gym.getNumberOfInactiveLockers());
+	    }
+	    
+	    @Test
+	    public void testUser() {
+	    	User u = new User("11a", "Paco", 23, UserType.BASIC);
+	    	u.setUserType(UserType.PREMIUM);
+	    	u.setName("Pablo");
+	    	u.setNif("1234G");
+	    	u.setAge(25);
+	    	
+	    	assertNotNull(u.toString());
+	    	
+	    	User k = null;
+	    	Object c = null;
+	    	
+	    	User x = new User("12345T", "Pedro", 36);
+	    	assertFalse(u.equals(x));
+	    	assertFalse(x.equals(k));
+	    	assertFalse(x.equals(c));
+	    }
+	    
+	    @Test
+	    public void testLocker() {
+	    	Locker taquilla1 = new Locker(1, false);
+	    	
+	    	assertEquals(1, taquilla1.getNumber());
+	    	taquilla1.setActive(true);
+	    	
+	    	Locker taquilla2 = new Locker(2, true);
+	    	assertTrue(taquilla2.isFree());
+	    	
+	    }
+	    
+	    @Test(expected = IllegalArgumentException.class)
+	    public void testLockerInvalidNumber() {
+	    	Locker badLocker = new Locker(0, true);
+	        assertNull(badLocker);
+	    }
+
+	    
+	}
+

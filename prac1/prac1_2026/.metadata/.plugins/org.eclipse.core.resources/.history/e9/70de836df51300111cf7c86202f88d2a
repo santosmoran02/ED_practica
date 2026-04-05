@@ -1,0 +1,79 @@
+package ule.edi.gym;
+
+
+public class User {
+
+	private String name;
+	private String nif;
+	private int age;
+	private UserType userType;
+
+	public User(String nif, String name, int age, UserType userType) {
+		this.nif = nif;
+		this.name = name;
+		this.age = age;
+		this.userType = userType;
+	}
+	
+	public String getName() {
+		return this.name;
+	}
+	
+	public UserType getUserType() {
+    	return this.userType;
+    }
+    
+    public void setUserType(UserType userType) {
+    	this.userType = userType;
+    }
+
+	public void setName(String name) {
+		this.name = name; 
+	}
+
+	public String getNif() {
+		return this.nif;
+	}
+
+	public void setNif(String nif) {
+		this.nif = nif;
+	}
+
+	public int getAge() {
+		return this.age;
+	}
+
+	public void setAge(int age) {
+		this.age = age;
+	}
+
+	public User(String nif, String name, int edad) {
+		this.nif = nif;
+		this.name = name;
+		this.age = edad;
+	}
+
+
+	@Override
+	public String toString() {
+		return "{ NIF: "+ nif + "  Name : " + name + ", Age:" + age + "}";
+	}
+	
+    @Override
+	public boolean equals(Object obj) {
+    	boolean estado = false;
+		if (obj == null) {
+			return estado;
+		}
+		if (obj instanceof User) {
+			User otro = (User) obj;
+			estado = this.nif.equals(otro.nif);
+			return estado;
+		}
+    	
+	
+    	return estado;
+	
+}
+
+}

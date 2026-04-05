@@ -1,0 +1,39 @@
+package ule.edi.gym;
+
+public class Locker {
+	
+
+	    private final int number;        // 1..n
+	    private boolean active;          // operativa
+	    private User user;               // null => libre
+
+	    public Locker(int number, boolean active) {
+	        if (number <= 0) {
+	            throw new IllegalArgumentException("number debe ser >= 1");
+	        }
+	        this.number = number;
+	        this.active = active;
+	        this.user = null;
+	      	    }
+
+	    public int getNumber() {
+	        return number;
+	    }
+
+	    public boolean isActive() {
+	        return active;
+	    }
+
+	    public void setActive(boolean active) {
+	        this.active = active;
+	    }
+
+	    public User getUser() {
+	        return user;
+	    }
+
+	    public boolean isFree() {
+	        return user == null;
+	    }
+	
+}
