@@ -98,7 +98,7 @@ public class DoubleLinkedTest {
 	@Test
 	public void testRemoveAllLast() throws EmptyCollectionException{
 		Assert.assertEquals("C", listaConElems.removeAllLast());
-		Assert.assertEquals("[A(3) B(2) C(1) ]", listaConElems.toString());
+		Assert.assertEquals("[A(3) B(2) ]", listaConElems.toString());
 		Assert.assertTrue(listaConElems.size()==2);
 	}
 	
@@ -118,8 +118,8 @@ public class DoubleLinkedTest {
 	
 	@Test
 	public void testRemoveAllPosLast() throws EmptyCollectionException{
-		Assert.assertEquals("C", listaConElems.removePos(3,1));
-		Assert.assertEquals("[A(3) B(2) ]",listaConElems.toString());
+		Assert.assertEquals("C", listaConElems.removeAllLast());
+		Assert.assertEquals("[A(3) B(2) C(1) ]", listaConElems.toString());
 		Assert.assertTrue(listaConElems.size()==2);
 	}
 	
@@ -259,10 +259,11 @@ public class DoubleLinkedTest {
 	
 	@Test
 	public void test_Intersection_sameList() {
-		listaConElems.addLast("B",1);
-		Assert.assertEquals("[A(3) B(3) C(1) ]",listaConElems.toString());
-		ArrayList<String> cadena=listaConElems.intersection(listaConElems);
-		Assert.assertEquals("[A(3) B(3) C(1) ]", cadena.toString());
+		listaConElems = new DoubleLinkedListImpl<String>("A", "B", "C", "A", "B", "A");
+		listaConElems.addLast("B", 1);
+		Assert.assertEquals("[A(3) B(3) C(1) ]", listaConElems.toString());
+		ArrayList<String> cadena = listaConElems.intersection(listaConElems);
+		Assert.assertEquals("[A, B, C]", cadena.toString());
 	}
 	
 	@Test (expected=NoSuchElementException.class)

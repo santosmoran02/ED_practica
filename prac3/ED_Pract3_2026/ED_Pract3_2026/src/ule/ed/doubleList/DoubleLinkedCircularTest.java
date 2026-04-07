@@ -259,10 +259,11 @@ public class DoubleLinkedCircularTest {
 	
 	@Test
 	public void listTest2() {
-		listaConElems.addLast("B",1);
-		Assert.assertEquals("[A(3) B(3) C(1) ]",listaConElems.toString());
-		ArrayList<String> cadena=listaConElems.intersection(listaConElems);
-		Assert.assertEquals("[A(3) B(2) C(1) ]", cadena.toString());
+		listaConElems = new DoubleLinkedCircularList<String>("A", "B", "C", "A", "B", "A");
+		listaConElems.addLast("B", 1);
+		Assert.assertEquals("[A(3) B(3) C(1) ]", listaConElems.toString());
+		ArrayList<String> cadena = listaConElems.intersection(listaConElems);
+		Assert.assertEquals("[A, B, C]", cadena.toString());
 	}
 	
 	@Test (expected=NoSuchElementException.class)

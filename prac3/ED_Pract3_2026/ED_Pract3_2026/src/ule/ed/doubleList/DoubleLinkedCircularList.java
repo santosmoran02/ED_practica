@@ -91,19 +91,20 @@ public class DoubleLinkedCircularList<T> implements IDoubleList<T> {
 
 
 		public ReverseIterator(DoubleNode<T> nodo) {
+			actual = nodo.prev;
 		}
 
 		@Override
 		public boolean hasNext() {
-			// TODO
-			return false;
+			return actual != cab;
 		}
 
 		@Override
 		public T next() {
-			// TODO
-			return null;
-			}
+			T elemento = actual.elem;
+			actual = actual.prev;
+			return elemento;
+		}
 	}
 	
 	@SuppressWarnings("hiding")
@@ -153,6 +154,9 @@ public class DoubleLinkedCircularList<T> implements IDoubleList<T> {
 	
 	public DoubleLinkedCircularList() {
 		// TODO crear el nodo cabecera, dejar next y prev apuntando a la misma cabecera
+		cab = new DoubleNode<T>(null, 0);
+		cab.next = cab;
+		cab.prev = cab;
 	
 	}
 
@@ -170,25 +174,65 @@ public class DoubleLinkedCircularList<T> implements IDoubleList<T> {
 
 	@Override
 	public boolean isEmpty() {
-		return false;
-		// TODO Auto-generated method stub
-		}
+		return (cab.next == cab);
+	}
 
 	@Override
 	public void clear() {
-		// TODO Auto-generated method stub
+		cab.next = cab;
+		cab.prev = cab;
 	}
 
 	@Override
 	public void addFirst(T elem, int n) {
-		// TODO Auto-generated method stub
+		if (elem == null) {
+			throw new NullPointerException("Error, el elemento no puede ser nulo\n");
+		}
 		
+		if (n <= 0) {
+			throw new IllegalArgumentException("Error, el número no puede ser 0 o negativo\n");
+		}
+		
+		DoubleNode<T> aux = cab.next;
+		DoubleNode<T> nodoNuevo = new DoubleNode<>(elem, n);
+		
+		if (contains(elem)) {
+			while (!aux.elem.equals(elem)) {
+				aux = aux.next;
+			}
+			aux.count = aux.count + n;
+		} else {
+			nodoNuevo.prev = cab;
+			nodoNuevo.next = cab.next;
+			cab.next.prev = nodoNuevo;
+			cab.next = nodoNuevo;	
+		}
 	}
 
 	@Override
 	public void addLast(T elem, int n) {
-		// TODO Auto-generated method stub
+		if (elem == null) {
+			throw new NullPointerException("Error, el elemento no puede ser nulo\n");
+		}
 		
+		if (n <= 0) {
+			throw new IllegalArgumentException("Error, el número no puede ser 0 o menor que 0\n");
+		}
+		
+		DoubleNode<T> aux = cab.next;
+		DoubleNode<T> nodoNuevo = new DoubleNode<>(elem, n);
+		
+		if (contains(elem)) {
+			while (!aux.elem.equals(elem)) {
+				aux = aux.next;
+			}
+			aux.count = aux.count + n;
+		} else {
+			nodoNuevo.prev = cab.prev;
+			cab.prev.next = nodoNuevo;
+			nodoNuevo.next = cab;
+			cab.prev = nodoNuevo;
+		}
 	}
 
 	@Override
@@ -211,20 +255,44 @@ public class DoubleLinkedCircularList<T> implements IDoubleList<T> {
 
 	@Override
 	public boolean contains(T elem) {
-		// TODO Auto-generated method stub
+		if (elem == null) {
+			throw new NullPointerException("Error, el elemento no puede ser nulo\n");
+		}
+		
+		DoubleNode<T> aux = cab.next;
+		while (aux != cab) {
+			if (aux.elem.equals(elem)) {
+				return true;
+			}
+			aux = aux.next;
+		}
 		return false;
 	}
 
 	@Override
 	public int size() {
-		// TODO Auto-generated method stub
-		return 0;
+		int total = 0;
+		
+		DoubleNode<T> aux = cab.next;
+		
+		while (aux != cab) {
+			aux = aux.next;
+			total++;
+		}
+		return total;
 	}
 
 	@Override
 	public int countInstances() {
-		// TODO Auto-generated method stub
-		return 0;
+		int total = 0;
+		
+		DoubleNode<T> aux = cab.next;
+		
+		while (aux != cab) {
+			total += aux.count;
+			aux = aux.next;
+		}
+		return total;
 	}
 
 	@Override
@@ -235,8 +303,7 @@ public class DoubleLinkedCircularList<T> implements IDoubleList<T> {
 
 	@Override
 	public Iterator<T> iterator() {
-		// TODO Auto-generated method stub
-		return null;
+		return new DobleLinkedListIterator<T>(cab);
 	}
 
 	@Override

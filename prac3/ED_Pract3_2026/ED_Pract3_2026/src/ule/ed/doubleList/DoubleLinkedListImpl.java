@@ -482,27 +482,19 @@ public class DoubleLinkedListImpl<T> implements IDoubleList<T> {
 
 	@Override
 	public ArrayList<T> intersection(IDoubleList<T> other) {
+		
+		if (other == null) {
+			throw new NullPointerException("Error, el parámetro no puede ser nulo\n");
+		}
+		
 		DoubleNode<T> aux = front;
 		ArrayList<T> listaDevolver = new ArrayList<T>();
 		
 		
 		while (aux != null) {
-			int ejemplos = 0;
+			
 			if (other.contains(aux.elem)) {
-				Iterator<T> it = other.iteratorInstance();
-				int countOther = 0;
-				while(it.hasNext()) {
-					T e = it.next();
-					if (e.equals(aux.elem)) {
-				        countOther++;
-				    }
-				}
-				ejemplos = Math.min(aux.count, countOther);
-				
-				while (ejemplos > 0) {
-					listaDevolver.add(aux.elem);
-					ejemplos--;
-				}
+				listaDevolver.add(aux.elem);
 			}
 			aux = aux.next;
 		}
