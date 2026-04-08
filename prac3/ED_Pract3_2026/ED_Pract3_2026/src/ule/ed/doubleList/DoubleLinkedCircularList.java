@@ -107,7 +107,7 @@ public class DoubleLinkedCircularList<T> implements IDoubleList<T> {
 		public T next() {
 			
 			if (!hasNext()) {
-			    throw new NoSuchElementException();
+			    throw new NoSuchElementException("Error, no hay siguiente\n");
 			}
 			
 			T elemento = actual.elem;
@@ -137,7 +137,7 @@ public class DoubleLinkedCircularList<T> implements IDoubleList<T> {
 		public T next() {
 			
 			if (!hasNext()) {
-			    throw new NoSuchElementException();
+			    throw new NoSuchElementException("Error, no hay siguiente\n");
 			}
 			
 			T elemento = actual.elem;
@@ -169,6 +169,9 @@ public class DoubleLinkedCircularList<T> implements IDoubleList<T> {
 
 		@Override
 		public T next() {
+			if (!hasNext()) {
+			    throw new NoSuchElementException("Error, no hay siguiente\n");
+			}
 			T elemento = actual.elem;
 			contador++;
 			
@@ -294,17 +297,19 @@ public class DoubleLinkedCircularList<T> implements IDoubleList<T> {
 
 	@Override
 	public T removePos(int pos, int num) throws EmptyCollectionException {
+		if (isEmpty()) {
+			throw new EmptyCollectionException("Error, la lista no puede estar vacía\n");
+		}
+		
 		if (pos < 1 || pos > size()) {
 			throw new IllegalArgumentException("Error, la posición tiene que estar entre 1 y size\n");
 		}
 		
-		if (num < 1) {
+		if (num < 0) {
 			throw new IllegalArgumentException("Error, el número tiene que ser mayor o igual que 1\n");
 		}
 		
-		if (isEmpty()) {
-			throw new EmptyCollectionException("Error, la lista no puede estar vacía\n");
-		}
+		
 		
 		int posicion = 1;
 		DoubleNode<T> aux = cab.next;

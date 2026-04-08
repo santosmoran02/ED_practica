@@ -46,6 +46,9 @@ public class DoubleLinkedListImpl<T> implements IDoubleList<T> {
 
 		@Override
 		public T next() {
+			if (!hasNext()) {
+				throw new NoSuchElementException("Error, el elemento no está en la lista\n");
+			}
 			T elemento = node.elem;
 			node = node.next;
 			return elemento;
@@ -75,6 +78,9 @@ public class DoubleLinkedListImpl<T> implements IDoubleList<T> {
 
 		@Override
 		public T next() {
+			if (!hasNext()) {
+				throw new NoSuchElementException("Error, el elemento no está en la lista\n");
+			}
 			T elemento = node.elem;
 			node = node.prev;
 			return elemento;
@@ -102,6 +108,9 @@ public class DoubleLinkedListImpl<T> implements IDoubleList<T> {
 
 		@Override
 		public T next() {
+			if (!hasNext()) {
+				throw new NoSuchElementException("Error, el elemento no está en la lista\n");
+			}
 			
 			T elemento = node.elem;
 			contador++;
@@ -136,6 +145,9 @@ public class DoubleLinkedListImpl<T> implements IDoubleList<T> {
 
 		@Override
 		public T next() {
+			if (!hasNext()) {
+				throw new NoSuchElementException("Error, el elemento no está en la lista\n");
+			}
 			
 			T elemento = node.elem;
 			contador++;
@@ -282,7 +294,7 @@ public class DoubleLinkedListImpl<T> implements IDoubleList<T> {
 			throw new EmptyCollectionException("Error, la lista está vacía\n");
 		}
 		
-		if (pos < 1 || pos > size() || num <  1) {
+		if (pos < 1 || pos > size() || num <  0) {
 			throw new IllegalArgumentException("Error, la posición o el número no están en el rango de valores correctos\n");
 		}
 		
