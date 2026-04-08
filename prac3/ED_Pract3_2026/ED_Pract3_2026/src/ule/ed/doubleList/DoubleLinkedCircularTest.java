@@ -98,7 +98,7 @@ public class DoubleLinkedCircularTest {
 	@Test
 	public void testRemoveAllLast() throws EmptyCollectionException{
 		Assert.assertEquals("C", listaConElems.removeAllLast());
-		Assert.assertEquals("[A(3) B(2) C(1) ]", listaConElems.toString());
+		Assert.assertEquals("[A(3) B(2) ]", listaConElems.toString());
 		Assert.assertTrue(listaConElems.size()==2);
 	}
 	
