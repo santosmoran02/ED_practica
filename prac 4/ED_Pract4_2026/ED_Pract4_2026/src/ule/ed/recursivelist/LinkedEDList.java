@@ -22,15 +22,21 @@ public class LinkedEDList<T> implements EDList<T> {
 
 	@Override
 	public boolean isEmpty() {
-		// TODO 
-		return false;
+		return front == null;
 	}
 
 
 	@Override
 	public int size() {
-		// TODO RECURSIVAMENTE
-		return 0;
+		return sizeRec(front);
+	}
+	
+	private int sizeRec(Node<T> node) {
+		if (node == null) {
+			return 0;
+		} else {
+			return 1 + sizeRec(node.next);
+		}
 	}
 
 
