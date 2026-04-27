@@ -42,38 +42,134 @@ public class LinkedEDList<T> implements EDList<T> {
 
 	@Override
 	public void addLast(T elem) {
-		// TODO RECURSIVAMENTE
 		
+		if (elem == null) {
+			throw new NullPointerException("Error, el elemento no puede ser nulo\n");
+		}
+		
+		Node<T> nuevo = new Node<>(elem);
+		
+		if (front == null) {
+			front = nuevo;
+		} else {
+			addLastRec(front, elem);
+		}
+		
+	}
+	
+	private void addLastRec(Node<T> node, T elem) {
+		
+		Node<T> nuevo = new Node<>(elem);
+		
+		if (node.next == null) {
+			node.next = nuevo;
+		} else {
+			addLastRec(node.next, elem);
+		}
 	}
 
 	
 	@Override
 	public void addPos(T elem, int position) {
-		// TODO RECURSIVAMENTE
+		if (elem == null) {
+			throw new NullPointerException("Error, el elemento no puede ser nulo\n");
+		}
 		
+		if (position <= 0) {
+			throw new IllegalArgumentException("Error, la posición no puede se menor o igual a 0\n");
+		}
+		
+		Node<T> nuevo = new Node<>(elem);
+		
+		if (position == 1) {
+			nuevo.next = front;
+			front = nuevo;
+		} else if (position > size()) {
+			addLast(elem);
+		} else {
+			addPosRec(elem, front, position - 1);
+		}
+		
+	}
+	
+	private void addPosRec(T elem, Node<T> prev, int position) {
+		
+		Node<T> nuevo = new Node<>(elem);
+		
+		if (position == 1) {
+			nuevo.next = prev.next;
+			prev.next = nuevo;
+		} else {
+			addPosRec(elem, prev.next, position - 1);
+		}
 	}
 
 
 	@Override
 	public T getElemPos(int position) {
-		// TODO RECURSIVAMENTE
-		return null;
+		if (position < 1 || position > size()) {
+			throw new IllegalArgumentException("Error, la posición tiene que estar entre 1 y el tamaño\n");
+		}
+		
+		return getElemPosRec(front, position);
+	}
+	
+	private T getElemPosRec(Node<T> node, int position) {
+		if (position == 1) {
+			return node.elem;
+		} else {
+			return getElemPosRec(node.next, position - 1);
+		}
 	}
 
 
 
 	@Override
 	public int getPosFirst(T elem) {
-		// TODO RECURSIVAMENTE
-		return 0;
+		if (elem == null) {
+			throw new NullPointerException("Error, el elemento no puede ser nulo\n");
+		} else {
+			return getPosFirstRec(elem, front, 1);
+		}
 	}
-
-
-
+	
+	private int getPosFirstRec(T elem, Node<T> node, int position) {
+		
+		if (node == null) {
+			throw new NoSuchElementException("Error, el elemento no está en la lista\n");
+		} else if (node.elem.equals(elem)) {
+			return position;
+		} else {
+			return getPosFirstRec(elem, node.next, position + 1);
+		}
+	}
+	
 	@Override
 	public int getPosLast(T elem) {
-		// TODO RECURSIVAMENTE
-		return 0;
+	    if (elem == null) {
+	        throw new NullPointerException("Error, el elemento no puede ser nulo\n");
+	    }
+	    int result = getPosLastRec(elem, front, 1);
+	    if (result == -1) {
+	        throw new NoSuchElementException("Error, el elemento no está en la lista\n");
+	    }
+	    return result;
+	}
+	
+	private int getPosLastRec(T elem, Node<T> node, int position) {
+	    if (node == null) {
+	        return -1;
+	    }
+	    
+	    int resto = getPosLastRec(elem, node.next, position + 1);
+	    
+	    if (resto != -1) {
+	        return resto;
+	    } else if (node.elem.equals(elem)) {
+	        return position;
+	    } else {
+	        return -1;
+	    }
 	}
 
 
