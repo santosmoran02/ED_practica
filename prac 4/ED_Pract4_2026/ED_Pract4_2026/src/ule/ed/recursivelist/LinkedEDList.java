@@ -179,6 +179,15 @@ public class LinkedEDList<T> implements EDList<T> {
 		// TODO RECURSIVAMENTE
 		return null;
 	}
+	
+	private T removeLastRec(Node<T> node) {
+		if (node.next == null) {
+			return node.elem;
+		} else {
+			
+		}
+		
+	}
 
 
 
