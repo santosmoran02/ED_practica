@@ -176,27 +176,71 @@ public class LinkedEDList<T> implements EDList<T> {
 
 	@Override
 	public T removelast() throws EmptyCollectionException {
-		// TODO RECURSIVAMENTE
-		return null;
+		if (isEmpty()) {
+			throw new EmptyCollectionException("Error, la lista no puede estar vacía\n");
+		}
+		
+		T[] result = (T[]) new Object[1];
+		front = removeLastRec(front, result);
+		return result[0];
 	}
 	
-	private T removeLastRec(Node<T> node) {
+	private Node<T> removeLastRec(Node<T> node, T[] result) {
 		if (node.next == null) {
-			return node.elem;
+			result[0] = node.elem;
+			return null;	
 		} else {
-			
+			node.next = removeLastRec(node.next, result);
+			return node;
 		}
 		
 	}
-
-
-
+	
 	
 
 	@Override
 	public T removeLastElem(T elem) {
-		// TODO RECURSIVAMENTE
-		return null;
+	    if (elem == null) {
+	        throw new NullPointerException("Error, el elemento no puede ser nulo\n");
+	    }
+	    
+	    if (isEmpty()) {
+	        throw new NoSuchElementException("Error, la lista está vacía\n");
+	    }
+	    
+	   
+	    T eliminar = removeLastElemRec(front, front.next, elem);
+	    
+	    if (eliminar != null) {
+	        return eliminar;
+	    }
+	    
+	    if (front.elem.equals(elem)) {
+	        T dev = front.elem;
+	        front = front.next;
+	        return dev;
+	    }
+	    
+	    throw new NoSuchElementException("Error, el elemento no está en la lista\n");
+	}
+
+	private T removeLastElemRec(Node<T> prev, Node<T> current, T elem) {
+	    if (current == null) {
+	        return null;
+	    }
+	    
+	    T eliminar = removeLastElemRec(current, current.next, elem);
+	    
+	    if (eliminar != null) {
+	        return eliminar;
+	    }
+	    
+	    if (current.elem.equals(elem)) {
+	        prev.next = current.next;
+	        return current.elem; 
+	    }
+	    
+	    return null;
 	}
 
 
@@ -211,8 +255,26 @@ public class LinkedEDList<T> implements EDList<T> {
 
 	@Override
 	public int removeOddElements(){
-		// TODO RECURSIVAMENTE
-		return 0;
+		if (isEmpty()) {
+			return 0;
+		}
+		
+		front = front.next;
+		
+		if (front == null) {
+			return 1;
+		}
+		
+		return 1 + removeOddElementsRec(front);
+	}
+	
+	private int removeOddElementsRec(Node<T> node) {
+		if (node == null || node.next == null) {
+			return 0;
+		} else {
+			node.next = node.next.next;
+			return 1 + removeOddElementsRec(node.next);
+		}
 	}
 
 
@@ -251,8 +313,34 @@ public class LinkedEDList<T> implements EDList<T> {
 
 	@Override
 	public T removePenult() throws EmptyCollectionException {
-		// TODO Auto-generated method stub
-		return null;
+		if (isEmpty()) {
+			throw new EmptyCollectionException("Error, la lista no puede estar vacía\n");
+		}
+		
+		if (front.next == null) {
+			throw new NoSuchElementException("Error, la lista no puede tener solo un elemento\n");
+		}
+		
+		T eliminado;
+		
+		if (front.next.next == null) {
+			eliminado = front.elem;
+			front = front.next;
+			return eliminado;
+		}
+		
+		return removePenultRec(front);
+	}
+	
+	private T removePenultRec(Node<T> node) {
+		
+		if (node.next.next.next == null) {
+			T result = node.next.elem;
+			node.next = node.next.next;
+			return result;
+		} 
+		
+		return removePenultRec(node.next);
 	}
 
 	
