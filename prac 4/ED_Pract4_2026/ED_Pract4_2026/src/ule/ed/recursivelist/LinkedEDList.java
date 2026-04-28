@@ -1,5 +1,7 @@
 package ule.ed.recursivelist;
 
+import java.util.NoSuchElementException;
+
 
 public class LinkedEDList<T> implements EDList<T> {
 
@@ -247,8 +249,20 @@ public class LinkedEDList<T> implements EDList<T> {
 
 	@Override
 	public EDList<T> reverse() {
-		// TODO RECURSIVAMENTE
-		return null;
+		EDList<T> lista_devolver = new LinkedEDList<>();
+		reverseRec(front, lista_devolver);
+		return lista_devolver;
+	}
+	
+	private void reverseRec(Node<T> actual, EDList<T> listaNueva){
+		
+		if (actual == null) {
+			return;
+		}
+		
+		reverseRec(actual.next, listaNueva);
+		
+		listaNueva.addLast(actual.elem);
 	}
 
 
@@ -281,34 +295,90 @@ public class LinkedEDList<T> implements EDList<T> {
 
 	@Override
 	public int removeConsecDuplicates() {
-		// TODO RECURSIVAMENTE
-		return 0;
+		if (isEmpty()) {
+			return 0;
+		}
+		return removeConsecDuplicatesRec(front, front.next);
+	}
+	
+	private int removeConsecDuplicatesRec(Node<T> anterior, Node<T> actual) {
+		if (actual == null) {
+			return 0;
+		}
+		
+		int borrados = removeConsecDuplicatesRec(actual, actual.next);
+		
+		if (anterior.elem.equals(actual.elem)) {
+			anterior.next = actual.next;
+			return 1 + borrados;
+		}
+		return borrados;
 	}
 
 
 
 	@Override
 	public String toSringExceptFromUntilReverse(int from, int until) {
-		// TODO RECURSIVAMENTE
-		return null;
+		
+		if (from <= 0 || until <= 0 || from < until) {
+			throw new IllegalArgumentException("Error, introduce valores válidos para from y until\n");
+		}
+		
+		return "(" + toStringExceptFromUntilReverse(front, from, until, 1) + ")";
+	}
+	
+	private String toStringExceptFromUntilReverse(Node<T> node, int from, int until, int posicion) {
+		
+		if (node == null) {
+			return "";
+		}
+		
+		String cadena = toStringExceptFromUntilReverse(node.next, from, until, posicion + 1);
+		
+		if (posicion > from || posicion < until) {
+			return cadena + node.elem + " ";
+		}
+		
+		return cadena;		
+		
 	}
 
 
 
 	@Override
 	public boolean lengthEqualsTo(int n) {
-		// TODO RECURSIVAMENTE
-		return false;
+		return lengthEqualsToRec(front) == n;
+	}
+	
+	private int lengthEqualsToRec(Node<T> node) {
+		
+		if (node == null) {
+			return 0;
+		}
+		
+		return 1 + lengthEqualsToRec(node.next);
 	}
 
 
 
 	@Override
 	public String toString() {
-		// TODO RECURSIVAMENTE
-	
-		return null;
+		if (isEmpty()) {
+			return "()";
+		}
+		
+		return "(" + toStringRec(front) + ")";
 	}
+	
+	private String toStringRec(Node<T> node) {
+		if (node == null) {
+			return "";
+		}
+		
+		return node.elem + " " + toStringRec(node.next);
+	}
+	
+
 
 
 	@Override

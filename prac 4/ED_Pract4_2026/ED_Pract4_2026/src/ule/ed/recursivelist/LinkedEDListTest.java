@@ -55,7 +55,60 @@ public class LinkedEDListTest {
 		
 	}
 	
-	// TODO  AÑADIR RESTO DE METODOS DE TESTS
+	
+	@Test(expected=NullPointerException.class)
+	public void test_addPos_Null() {
+		lista.addPos(null, 1);
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public void test_addPos_0() {
+		lista.addPos("2", 0);
+	}
+	
+	@Test
+	public void test_addPos_pos_mayor_que_size() {
+		lista.addPos("3", 1000000000);
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public void test_getElemPos_pos_not_valid() {
+		lista.getElemPos(-1);
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public void test_getElemPos_pos_not_valid2() {
+		lista.getElemPos(10000000);
+	}
+	
+	@Test
+	public void test_getElemPos_pos_valid() {
+		lista.addLast("2");
+		lista.addLast("5");
+		lista.addLast("7");
+		lista.getElemPos(1);
+		lista.getElemPos(3);
+	}
+	
+	@Test(expected=NullPointerException.class)
+	public void test_getPosFirst_Null() {
+		lista.getPosFirst(null);
+	}
+	
+	@Test(expected=NoSuchElementException.class)
+	public void test_getPosFirst_not_valid_element() {
+		lista.getPosFirst("7");
+	}
+	
+	@Test
+	public void test_getPosFirst() {
+		lista.addLast("2");
+		lista.addLast("3");
+		lista.addLast("4");
+		lista.addLast("4");
+		lista.addLast("4");
+		lista.getPosFirst("4");
+	}
 	
 	
 }
