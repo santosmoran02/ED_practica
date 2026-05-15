@@ -118,11 +118,15 @@ public class BinarySearchTree<T extends Comparable<? super T>>  {
 	 * @return  	numero de elementos insertados en el arbol en un nodo nuevo
 	 */
 	public int insert(T... elements) {
-		// TODO Implementar el metodo	   
-		
-		return 0;
-
-	
+		int contador = 0;
+	    for (T element : elements) {
+	        if (element != null) {
+	            if (insert(element)) {
+	                contador++;
+	            }
+	        }
+	    }
+	    return contador;
 	}
 
 	/**
@@ -189,8 +193,33 @@ public class BinarySearchTree<T extends Comparable<? super T>>  {
 	 *
 	 */
 	public boolean contains(T element) {
-		// TODO Implementar el metodo
-	return false;
+		if (element == null) {
+			throw new IllegalArgumentException("Error, el elemento buscado no está en el árbol\n");
+		}
+		
+		if (root == null) {
+			return false;
+		}
+		return containsRec(root, element);
+	}
+	
+	private boolean containsRec(BinaryTreeNode<T> node, T element) {
+		int dif = element.compareTo(node.elem);
+		
+		if (dif > 0) {
+			if (node.right == null) {
+				return false;
+			}
+			return containsRec(node.right, element);
+		} else if (dif < 0) {
+			if (node.left == null) {
+				return false;
+			}
+			return containsRec(node.left, element);
+		} else {
+			return true;
+		}
+		
 	}
 	
 	
@@ -210,10 +239,25 @@ public class BinarySearchTree<T extends Comparable<? super T>>  {
 	 * @return iterador para el recorrido en anchura
 	 */
     public Iterator<T> iteratorWidth() {
-	 	// TODO Implementar metodo
-		// puede implementarse creando una lista con el recorrido en anchura de los
-		// elementos del arbol y devolver el iterador de dicha lista
-    	 return null;
+	 	LinkedList<T> lista = new LinkedList<T>();
+	 	if (root == null) {
+	 		return lista.iterator();
+	 	}
+	 	LinkedList<BinaryTreeNode<T>> cola = new LinkedList<>();
+	 	
+	 	cola.add(root);
+	 	
+	 	while (!cola.isEmpty()) {
+	 		BinaryTreeNode<T> nodo = cola.poll();
+	 		lista.add(nodo.elem);
+	 		if (nodo.left != null) {
+	 			cola.add(nodo.left);
+	 		}
+	 		if (nodo.right != null) {
+	 			cola.add(nodo.right);
+	 		}
+	 	}
+	 	return lista.iterator();
 	}
 
 	/**
@@ -229,11 +273,29 @@ public class BinarySearchTree<T extends Comparable<? super T>>  {
 	 * @return iterador para el recorrido en anchura
 	 */
      public Iterator<T> iteratorWidthInstances() {
-		// TODO Implementar metodo
-		// puede implementarse creando una lista con el recorrido en anchura de los
-		// elementos del arbol (teniendo el número de instancias que tiene el elemento)
-		//y devolver el iterador de dicha lista
-    		return null;
+		LinkedList<T> lista = new LinkedList<>();
+		if (root == null) {
+			return lista.iterator();
+		}
+		
+		LinkedList<BinaryTreeNode<T>> cola = new LinkedList<>();
+		cola.add(root);
+		
+		while (!cola.isEmpty()) {
+			BinaryTreeNode<T> nodo = cola.poll();
+			int contador = nodo.count;
+			while (contador > 0) {
+				lista.add(nodo.elem);
+				contador--;
+			}
+			if (nodo.left != null) {
+				cola.add(nodo.left);
+			}
+			if (nodo.right != null) {
+				cola.add(nodo.right);
+			}
+		}
+		return lista.iterator();
 	 }
 	
 		
@@ -273,8 +335,19 @@ public class BinarySearchTree<T extends Comparable<? super T>>  {
 	 * @return el número de instancias de elementos del arbol 
 	 */
 	public int instancesCount() {
-		// TODO implementar este metodo
-	return 0;
+		if (root == null) {
+			return 0;
+		}
+		
+		return instancesCountRec(root);
+	}
+	
+	private int instancesCountRec(BinaryTreeNode<T> node) {
+		if (node == null) {
+			return 0;
+		} else {
+			return node.count + instancesCountRec(node.left) + instancesCountRec(node.right);
+		}
 	}
 	
 
@@ -309,8 +382,108 @@ public class BinarySearchTree<T extends Comparable<? super T>>  {
 	 * 
 	 */
 	public int remove(T element, int num) {
-		// TODO Implementar el metodo
-		return 0;
+		if (element == null) {
+			throw new IllegalArgumentException("Error, el elemento no puede ser nulo\n");
+		}
+		
+		if (root == null || !contains(element)) {
+			throw new NoSuchElementException("Error, el elemento no está contenido en el árbol\n");
+		}
+		
+		return removeRec(root, element, num);
+	}
+	
+	private int removeRec(BinaryTreeNode<T> node, T element, int num) {
+	    int dif = element.compareTo(node.elem);
+
+	    if (dif < 0) {
+	        if (node.left == null) {
+	            return 0;
+	        }
+	        return removeRec(node.left, element, num);
+	    } else if (dif > 0) {
+	        if (node.right == null) {
+	            return 0;
+	        }
+	        return removeRec(node.right, element, num);
+	    } else {
+	        int elementosDevolver = 0;
+	        if (num >= node.count) {
+	            elementosDevolver = node.count;
+	            if (node.father == null) {
+	                if (isLeaf(node)) {
+	                    root = null;
+	                } else if (node.left != null && node.right == null) {
+	                    root = node.left;
+	                    root.father = null;
+	                } else if (node.right != null && node.left == null) {
+	                    root = node.right;
+	                    root.father = null;
+	                } else {
+	                    BinaryTreeNode<T> nodoPeque = findMinRec(node.right);
+	                    node.elem = nodoPeque.elem;
+	                    node.count = nodoPeque.count;
+	                    if (nodoPeque.right != null) {
+	                        nodoPeque.father.left = nodoPeque.right;
+	                        nodoPeque.right.father = nodoPeque.father;
+	                    } else {
+	                        nodoPeque.father.left = null;
+	                    }
+	                }
+	            } else if (node.father.left == node) {
+	                if (node.left != null && node.right == null) {
+	                    node.father.left = node.left;
+	                    node.left.father = node.father;
+	                } else if (node.right != null && node.left == null) {
+	                    node.father.left = node.right;
+	                    node.right.father = node.father;
+	                } else if (node.left != null && node.right != null) {
+	                    BinaryTreeNode<T> nodoPeque = findMinRec(node.right);
+	                    node.elem = nodoPeque.elem;
+	                    node.count = nodoPeque.count;
+	                    if (nodoPeque.right != null) {
+	                        nodoPeque.father.left = nodoPeque.right;
+	                        nodoPeque.right.father = nodoPeque.father;
+	                    } else {
+	                        nodoPeque.father.left = null;
+	                    }
+	                } else {
+	                    node.father.left = null;
+	                }
+	            } else if (node.father.right == node) {
+	                if (node.left != null && node.right == null) {
+	                    node.father.right = node.left;
+	                    node.left.father = node.father;
+	                } else if (node.right != null && node.left == null) {
+	                    node.father.right = node.right;
+	                    node.right.father = node.father;
+	                } else if (node.left != null && node.right != null) {
+	                    BinaryTreeNode<T> nodoPeque = findMinRec(node.right);
+	                    node.elem = nodoPeque.elem;
+	                    node.count = nodoPeque.count;
+	                    if (nodoPeque.right != null) {
+	                        nodoPeque.father.left = nodoPeque.right;
+	                        nodoPeque.right.father = nodoPeque.father;
+	                    } else {
+	                        nodoPeque.father.left = null;
+	                    }
+	                } else {
+	                    node.father.right = null;
+	                }
+	            }
+	        } else {
+	            elementosDevolver = num;
+	            node.count -= num;
+	        }
+	        return elementosDevolver;
+	    }
+	}
+	
+	private BinaryTreeNode<T> findMinRec(BinaryTreeNode<T> nodo) {
+		if (nodo.left == null) {
+			return nodo;
+		}
+		return findMinRec(nodo.left);
 	}
 
 	
@@ -327,9 +500,28 @@ public class BinarySearchTree<T extends Comparable<? super T>>  {
 	 * @throws IllegalArgumentException si element es null
 	 */
 	public int removeAll(T element) {
-		// TODO Implementar el metodo
-		 return 0;
+		if (element == null) {
+			throw new IllegalArgumentException("Error, el elemento no puede ser nulo\n");
+		}
+		
+		if (root == null || !contains(element)){
+			throw new NoSuchElementException("Error, el elemento no está contenido en el árbol\n");
+		}
+		
+		 int count = findCount(root, element);
+		 return remove(element, count);
+	}
+	
+	private int findCount(BinaryTreeNode<T> node, T element) {
+	    int dif = element.compareTo(node.elem);
 
+	    if (dif < 0) {
+	        return findCount(node.left, element);
+	    } else if (dif > 0) {
+	        return findCount(node.right, element);
+	    } else {
+	        return node.count;
+	    }
 	}
 
 	/**
