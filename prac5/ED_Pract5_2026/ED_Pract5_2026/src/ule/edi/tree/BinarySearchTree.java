@@ -542,9 +542,39 @@ public class BinarySearchTree<T extends Comparable<? super T>>  {
 	* @throws IllegalArgumentException si el camino no contiene sólamente 0s y 1s
 */
 	public BinaryTreeNode<T> getSubtreeWithPath(String path) {
-		// TODO Implementar el metodo
-		
-		return null;
+		return getSubTreeWithPathRec(root, path);
+	}
+	
+	private BinaryTreeNode<T> getSubTreeWithPathRec(BinaryTreeNode<T> node, String path) {
+
+	    BinaryTreeNode<T> nodoDevolver = null;
+
+	    if (path.isEmpty()) {
+	        nodoDevolver = node;
+	        return nodoDevolver;
+	    }
+
+	    char c = path.charAt(0);
+
+	    if (c != '0' && c != '1') {
+	        throw new IllegalArgumentException("Error, algún número en la cadena no es un 0 o un 1\n");
+	    }
+
+	    if (c == '0') {
+	        if (node.left != null) {
+	            return getSubTreeWithPathRec(node.left, path.substring(1));
+	        } else {
+	            throw new NoSuchElementException("Error, no existe ese elemento en el árbol\n");
+	        }
+	    } else if (c == '1') {
+	        if (node.right != null) {
+	            return getSubTreeWithPathRec(node.right, path.substring(1));
+	        } else {
+	            throw new NoSuchElementException("Error, no existe ese elemento en el árbol\n");
+	        }
+	    }
+
+	    return nodoDevolver;
 	}
 
 
@@ -574,8 +604,8 @@ public class BinarySearchTree<T extends Comparable<? super T>>  {
  * @throws IllegalArgumentException si el camino no contiene sólamente 0s y 1s
 */
 	public T getContentWithPath(String path) {
-	//TODO implementar el método
-	return null;
+		BinaryTreeNode<T> nodo = getSubtreeWithPath(path);
+		return nodo.elem;
 	}
 	
 	
@@ -605,10 +635,28 @@ public class BinarySearchTree<T extends Comparable<? super T>>  {
 	 * 
 	 */
 	public int tagOnlySonPreorder() {
-		// TODO implementar este metodo
-     	
-		return 0;
-		
+	    return tagOnlySonPreorderRec(root, new int[]{0});
+	}
+
+	private int tagOnlySonPreorderRec(BinaryTreeNode<T> node, int[] pos) {
+	    if (node == null) {
+	        return 0;
+	    }
+	    
+	    pos[0]++;
+	    int contador = 0;
+	    
+	    if (node.father != null) {
+	        if (node.father.left == null || node.father.right == null) {
+	            node.setTag("onlySon", pos[0]);
+	            contador = 1;
+	        }
+	    }
+	    
+	    contador += tagOnlySonPreorderRec(node.left, pos);
+	    contador += tagOnlySonPreorderRec(node.right, pos);
+	    
+	    return contador;
 	}
 
 	
@@ -628,10 +676,35 @@ public class BinarySearchTree<T extends Comparable<? super T>>  {
 	 * 
 	 * @return int La cantidad de instancias del nodo con el mínimo valor
 	 */	
- public int removeAllMin() {
-	 // TODO EL MÉTODO
-	 return 0;
- }
+	 public int removeAllMin() {
+		 if (root == null) {
+			 return 0;
+		 }
+		 
+		 return removeAllMinRec(root);
+	 }
+	 
+	 private int removeAllMinRec(BinaryTreeNode<T> nodo) {
+		 
+		 if(nodo.left == null) {
+			 int contador = 0;
+			 contador = nodo.count;
+			 if (nodo.father == null) {
+				 root = nodo.right;
+				 if (root != null) {
+					 root.father = null;
+				 }
+			 } else if (nodo.right != null) {
+				 nodo.father.left = nodo.right;
+				 nodo.right.father = nodo.father;
+			 } else {
+				 nodo.father.left = null;
+			 }
+			 return contador;
+		 }
+		 
+		 return removeAllMinRec(nodo.left);
+	 }
 
  /**
 	 *  Importante: Solamente se puede recorrer el arbol una vez
@@ -667,7 +740,27 @@ public class BinarySearchTree<T extends Comparable<? super T>>  {
 	 public LinkedList<String> showLeaves(){
 		 // TODO EL MÉTODO
 		 LinkedList<String> lista= new LinkedList<String>();
+		 if (root == null) {
+			 return lista;
+		 } 
+		 showLeavesRec(root, lista, new int[]{0}, "");
 		 return lista;
+	 }
+	 
+	 private void showLeavesRec(BinaryTreeNode<T> node, LinkedList<String> lista, int[] pos, String camino){
+		 
+		 if (node == null) {
+			 return;
+		 }
+		 
+		 showLeavesRec(node.left, lista, pos, camino + "L");
+		 
+		 pos[0]++;
+		 if (isLeaf(node)) {
+			 lista.add("posicion: " + pos[0] + " - contenido: " + node.elem + " - camino: " + camino);
+		 }
+		 
+		 showLeavesRec(node.right, lista, pos, camino + "R");
 	 }
 	
 	 /**
@@ -689,7 +782,19 @@ public class BinarySearchTree<T extends Comparable<? super T>>  {
 	 * 
 	 */
 	public void tagHeight() {
-		// TODO implementar el metodo
+		tagHeightRec(root, 1);
+	}
+	
+	private void tagHeightRec(BinaryTreeNode<T> node, int altura) {
+		if (node == null) {
+			return;
+		}
+		
+		node.setTag("height", altura);
+		
+		tagHeightRec(node.left, altura + 1);
+		
+		tagHeightRec(node.right, altura + 1);
 	}
 	
 	
@@ -712,8 +817,22 @@ public class BinarySearchTree<T extends Comparable<? super T>>  {
 	 * 
 	 */
 	public void tagHeightLeaf() {
-		// TODO implementar el mÃ©todo
+		tagHeightLeafRec(root, 1);
+	}
+	
+	private void tagHeightLeafRec(BinaryTreeNode<T> nodo, int altura) {
 		
+		if (nodo == null) {
+			return;
+		}
+		
+		if (isLeaf(nodo)) {
+			nodo.setTag("height", altura);
+		}
+		
+		tagHeightLeafRec(nodo.left, altura + 1);
+		
+		tagHeightLeafRec(nodo.right, altura + 1);
 	}
 
 	
@@ -735,10 +854,23 @@ public class BinarySearchTree<T extends Comparable<? super T>>  {
 	 * 
 	 */
 	public void tagPosDescend() {
-		// TODO implementar este metodo
-
-	 return ;
-}
+		 tagPosDescendRec(root, new int[]{0});
+	}
+	
+	private void tagPosDescendRec(BinaryTreeNode<T> node, int[] pos) {
+		if (node == null) {
+			return;
+		}
+		
+		tagPosDescendRec(node.right, pos);
+		
+		pos[0]++;
+		node.setTag("descend", pos[0]);
+		
+		tagPosDescendRec(node.left, pos);
+		
+		
+	}
 
 
 /**
@@ -753,10 +885,33 @@ public class BinarySearchTree<T extends Comparable<? super T>>  {
  *  la llamada con n=4, devolverá 30
  * 
  */
-public T postordenN(int n){
-	 // TODO EL MÉTODO
-	 return null;
-}
+	
+	public T postordenN(int n) {
+	    return postordenNRec(root, n, new int[]{0});
+	}
+
+	private T postordenNRec(BinaryTreeNode<T> node, int n, int[] pos) {
+	    if (node == null) {
+	        return null;
+	    }
+	    
+	    T resultado = postordenNRec(node.left, n, pos);
+	    if (resultado != null) {
+	        return resultado;
+	    }
+	    
+	    resultado = postordenNRec(node.right, n, pos);
+	    if (resultado != null) {
+	        return resultado;
+	    }
+	    
+	    pos[0]++;
+	    if (pos[0] == n) {
+	        return node.elem;
+	    }
+	    
+	    return null;
+	}
 
 
 }
