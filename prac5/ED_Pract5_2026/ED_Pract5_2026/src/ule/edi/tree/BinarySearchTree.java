@@ -397,14 +397,10 @@ public class BinarySearchTree<T extends Comparable<? super T>>  {
 	    int dif = element.compareTo(node.elem);
 
 	    if (dif < 0) {
-	        if (node.left == null) {
-	            return 0;
-	        }
+	        if (node.left == null) return 0;
 	        return removeRec(node.left, element, num);
 	    } else if (dif > 0) {
-	        if (node.right == null) {
-	            return 0;
-	        }
+	        if (node.right == null) return 0;
 	        return removeRec(node.right, element, num);
 	    } else {
 	        int elementosDevolver = 0;
@@ -423,12 +419,13 @@ public class BinarySearchTree<T extends Comparable<? super T>>  {
 	                    BinaryTreeNode<T> nodoPeque = findMinRec(node.right);
 	                    node.elem = nodoPeque.elem;
 	                    node.count = nodoPeque.count;
-	                    if (nodoPeque.right != null) {
-	                        nodoPeque.father.left = nodoPeque.right;
-	                        nodoPeque.right.father = nodoPeque.father;
-	                    } else {
-	                        nodoPeque.father.left = null;
-	                    }
+	                    BinaryTreeNode<T> reemplazo = nodoPeque.right;
+	                    if (nodoPeque.father.left == nodoPeque)
+	                        nodoPeque.father.left = reemplazo;
+	                    else
+	                        nodoPeque.father.right = reemplazo;
+	                    if (reemplazo != null)
+	                        reemplazo.father = nodoPeque.father;
 	                }
 	            } else if (node.father.left == node) {
 	                if (node.left != null && node.right == null) {
@@ -441,12 +438,13 @@ public class BinarySearchTree<T extends Comparable<? super T>>  {
 	                    BinaryTreeNode<T> nodoPeque = findMinRec(node.right);
 	                    node.elem = nodoPeque.elem;
 	                    node.count = nodoPeque.count;
-	                    if (nodoPeque.right != null) {
-	                        nodoPeque.father.left = nodoPeque.right;
-	                        nodoPeque.right.father = nodoPeque.father;
-	                    } else {
-	                        nodoPeque.father.left = null;
-	                    }
+	                    BinaryTreeNode<T> reemplazo = nodoPeque.right;
+	                    if (nodoPeque.father.left == nodoPeque)
+	                        nodoPeque.father.left = reemplazo;
+	                    else
+	                        nodoPeque.father.right = reemplazo;
+	                    if (reemplazo != null)
+	                        reemplazo.father = nodoPeque.father;
 	                } else {
 	                    node.father.left = null;
 	                }
@@ -461,12 +459,13 @@ public class BinarySearchTree<T extends Comparable<? super T>>  {
 	                    BinaryTreeNode<T> nodoPeque = findMinRec(node.right);
 	                    node.elem = nodoPeque.elem;
 	                    node.count = nodoPeque.count;
-	                    if (nodoPeque.right != null) {
-	                        nodoPeque.father.left = nodoPeque.right;
-	                        nodoPeque.right.father = nodoPeque.father;
-	                    } else {
-	                        nodoPeque.father.left = null;
-	                    }
+	                    BinaryTreeNode<T> reemplazo = nodoPeque.right;
+	                    if (nodoPeque.father.left == nodoPeque)
+	                        nodoPeque.father.left = reemplazo;
+	                    else
+	                        nodoPeque.father.right = reemplazo;
+	                    if (reemplazo != null)
+	                        reemplazo.father = nodoPeque.father;
 	                } else {
 	                    node.father.right = null;
 	                }
